@@ -1,4 +1,4 @@
-Here’s a simple and clean `README.md` file for your **WatchList** project:
+**WatchList** project:
 
 ---
 
