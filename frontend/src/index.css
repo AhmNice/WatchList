@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+  @font-face {
+    font-family: Manrope-Regular;
+    src: url('../src/assets/fonts/Manrope-Regular.ttf');
+  }
+  @font-face {
+    font-family: Manrope-Medium;
+    src: url('../src/assets/fonts/Manrope-Medium.ttf');
+  }
+  @font-face {
+    font-family: Manrope-SemiBold;
+    src: url('../src/assets/fonts/Manrope-SemiBold.ttf');
+  }
+  @font-face {
+    font-family: Manrope-Bold;
+    src: url('../src/assets/fonts/Manrope-Bold.ttf');
+  }
+  @font-face {
+    font-family: Manrope-Light;
+    src: url('../src/assets/fonts/Manrope-Light.ttf');
+  }
+
+  .Manrope-Medium{
+    font-family: Manrope-Medium;
+  }
+  .Manrope-Regular{
+    font-family: Manrope-Regular;
+  }
+  .Manrope-SemiBold{
+    font-family: Manrope-SemiBold;
+  }
+  .Manrope-Bold{
+    font-family: Manrope-Bold;
+  }
+  .Manrope-Light{
+    font-family:  Manrope-Light;
+  }
+  .active{
+    color:#E50000;
+    background-color: #1f1f1f;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.faqCard{
+    align-self: start;
+    position: relative;
+   z-index: 2;
+}
+.faqCard::before{
+    content: '';
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    padding: 20px;
+    background: rgb(229,0,0);
+    background: radial-gradient(circle, rgba(229,0,0,1) 0%, rgba(15,15,15,0.773546918767507) 100%);
+    height: 1px;
+    padding: 0px;
+}
+.num{
+    background-color: #1f1f1f;
+    border: 1px solid #262626;
+    height: 40px;
+}

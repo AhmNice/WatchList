@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reactivate Your Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @media only screen and (max-width: 480px) {
+      .container {
+        margin: 20px auto !important;
+        padding: 24px !important;
+      }
+      .otp-code {
+        font-size: 24px !important;
+        padding: 12px 0 !important;
+      }
+      .button {
+        padding: 12px 24px !important;
+      }
+    }
+  </style>
+</head>
+<body style="font-family: 'Manrope', Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0;">
+  <div class="container" style="max-width: 480px; margin: 40px auto; background: #fff; box-shadow: 0 2px 8px #eee; padding: 32px;">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 16px 0; color: #2d3a6e;">Reactivate Your Account</h1>
+      <div style="height: 4px; width: 60px; background: #2d3a6e; margin: 0 auto;"></div>
+    </div>
+
+    <p style="margin: 16px 0;">Hello {userName},</p>
+    <p style="margin: 16px 0;">We received a request to reactivate your WatchList account. To complete this process, please use the following verification code:</p>
+
+    <div class="otp-code" style="font-size: 28px; font-weight: bold; background: #f0f4ff; color: #2d3a6e; padding: 16px 0; text-align: center; border-radius: 6px; letter-spacing: 4px; margin: 24px 0;">
+      {otpCode}
+    </div>
+
+    <p style="margin: 16px 0;">This code will expire in <strong>{expiryTime} minutes</strong>. Enter it in the app or website to verify your identity.</p>
+
+    <div style="background: #fff8f8; border-left: 4px solid #ff9800; padding: 16px; margin: 24px 0;">
+      <p style="margin: 0; font-weight: bold; color: #d32f2f;">⚠️ Security Alert:</p>
+      <p style="margin: 8px 0 0 0;">If you didn't request this reactivation, please <a href="{securityLink}" style="color: #2d3a6e; font-weight: 600;">secure your account</a> immediately.</p>
+    </div>
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="{reactivationLink}" class="button" style="background-color: #2d3a6e; color: white; padding: 16px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+        Complete Reactivation
+      </a>
+    </div>
+
+    <p style="margin: 16px 0;">After reactivation:</p>
+    <ul style="margin: 16px 0; padding-left: 24px;">
+      <li>Your profile and data will be fully restored</li>
+      <li>You'll regain access to all features</li>
+      <li>Notification settings will remain unchanged</li>
+    </ul>
+
+    <p style="margin: 32px 0 16px 0;">Welcome back!<br><strong>The WatchList Team</strong></p>
+
+    <div style="margin-top: 40px; font-size: 12px; color: #888; text-align: center;">
+      &copy; WatchList, 2025<br>
+      <span style="color: #bbb; font-size: 11px;">This is an automated message - please do not reply</span>
+    </div>
+  </div>
+</body>
+</html>
