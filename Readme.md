@@ -1,8 +1,3 @@
-**WatchList** project:
-
----
-
-````markdown
 # 🎬 WatchList
 
 **WatchList** is a sleek and modern movie discovery app that lets users browse detailed movie information, create custom playlists, and connect with other movie lovers — powered by [The Movie Database (TMDb)](https://www.themoviedb.org/).
@@ -23,7 +18,7 @@
 
 - **Frontend**: React, Tailwind CSS, Framer Motion
 - **State Management**: Zustand
-- **Backend**: Node.js, Express (optional)
+- **Backend**: Node.js, Express *(optional)*
 - **API**: [TMDb API](https://developer.themoviedb.org/)
 - **Icons**: Lucide React
 
@@ -36,32 +31,3 @@ git clone https://github.com/your-username/watchlist.git
 cd watchlist
 npm install
 npm run dev
-````
-
-> ⚠️ Make sure to set up a `.env` file with your TMDb API base URL:
-
-```
-VITE_MOVIE_BASE_URL=https://api.themoviedb.org/3
-```
-
----
-
-## 🖼️ Screenshots
-
-*Coming soon...*
-
----
-
-## 📄 License
-
-MIT License
-
----
-
-## 🙌 Acknowledgements
-
-* [TMDb](https://www.themoviedb.org/)
-* [Lucide Icons](https://lucide.dev/)
-* [Zustand](https://zustand-demo.pmnd.rs/)
-
-
