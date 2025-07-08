@@ -6,7 +6,7 @@ const Footer = () => {
     <section className="bg-[#0F0F0F]mt-8">
       <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-20 pt-20 pb-5">
         {/* Main Footer Content */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 py-10">
+        <div className="flex  md:flex-row justify-between items-center gap-6 py-10">
           {/* Logo or Brand Name */}
           <div className="text-2xl font-bold text-white">
             WatchList

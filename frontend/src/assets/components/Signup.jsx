@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -11,24 +11,25 @@ import {
   Phone,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { loading } = useAuthStore();
+  const { signup, success,errorMsg, loading } = useAuthStore();
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: "",
-    userName: "",
+    username: "",
     phoneNumber: "", // Added missing field
     password: "",
   });
-
   const [errors, setErrors] = useState({
     email: null,
-    userName: null,
+    username: null,
     phoneNumber: null,
     password: null,
   });
-
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -43,7 +44,7 @@ const Signup = () => {
   const validateForm = () => {
     const newErrors = {
       email: null,
-      userName: null,
+      username: null,
       phoneNumber: null,
       password: null,
     };
@@ -66,20 +67,30 @@ const Signup = () => {
     if (!formData.phoneNumber) {
       newErrors.phoneNumber = "Phone number is required";
       isValid = false;
-    }if (!formData.userName) {
-      newErrors.userName = "Username is required";
+    }if (!formData.username) {
+      newErrors.username = "username is required";
       isValid = false;
     }
     setErrors(newErrors)
     return isValid
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if(!validateForm()){
       return;
     }
-
+    await signup(formData)
   };
+  useEffect(()=>{
+    if(success){
+      navigate('/otp')
+    }
+  },[success])
+  useEffect(()=>{
+    if(errorMsg){
+      toast.error(errorMsg)
+    }
+  },[errorMsg])
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -114,7 +125,7 @@ const Signup = () => {
             transition={{ delay: 0.1 }}
           >
             <label
-              htmlFor="userName"
+              htmlFor="username"
               className="Manrope-SemiBold text-sm block font-medium text-[#F1F1F3] mb-2"
             >
               User Name
@@ -125,17 +136,17 @@ const Signup = () => {
               </div>
               <input
                 type="text"
-                id="userName"
-                value={formData.userName}
+                id="username"
+                value={formData.username}
                 onChange={handleChange}
                 className={`Manrope-Regular w-full bg-[#262626] text-white pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E50000] transition-all ${
-                  errors.userName ? "border border-red-500" : ""
+                  errors.username ? "border border-red-500" : ""
                 }`}
                 placeholder="Wazobia"
               />
             </div>
-            {errors.userName && (
-              <p className="mt-1 text-sm text-red-500">{errors.userName}</p>
+            {errors.username && (
+              <p className="mt-1 text-sm text-red-500">{errors.username}</p>
             )}
           </motion.div>
 
@@ -258,6 +269,7 @@ const Signup = () => {
             <button
               type="submit"
               disabled={loading}
+              // onClick={()=>handleSubmit()}
               className={`Manrope-Regular cursor-pointer w-full flex items-center justify-center py-2 px-4 rounded-lg bg-[#E50000] text-white font-medium hover:bg-[#FF1919] transition-colors mt-2 ${
                 loading ? "opacity-80 cursor-not-allowed" : ""
               }`}

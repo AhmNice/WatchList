@@ -28,6 +28,14 @@ const userSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
+  movieWatched:[{
+    type:String,
+    ref:'Movies'
+  }],
+  favorites:[{
+    type:String,
+    ref:'Movies'
+  }],
   lastLogin: {
     type: Date,
     default: Date.now,

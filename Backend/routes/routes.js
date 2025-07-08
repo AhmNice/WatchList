@@ -1,5 +1,5 @@
 import express, { Router } from 'express'
-import { createUser, deactivateAccount, deactivationRequest, deleteAccountRequest, deleteUserAccount, resendOTP, userLogin, userLogout, userPasswordChanged, userPasswordChangeRequest, verifyOTP } from '../controller/auth.controller.js'
+import { changePassword, checkAuth, createUser, deactivateAccount, deactivationRequest, deleteAccountRequest, deleteUserAccount, forgetPasswordRequest, resendOTP, userLogin, userLogout, userPasswordChanged, userPasswordChangeRequest, verifyOTP } from '../controller/auth.controller.js'
 import { otpResendLimiter } from '../middleware/otpResendLimiter.js'
 import { verifySession } from '../utils/verifySession.js'
 import { createEmptyPlaylist, createPlaylist, createSharedPlaylist, deletePlaylist, getPlaylistById, getUserPlaylists, removeMovieFromPlaylist, updatePlaylist } from '../controller/playlist.controller.js'
@@ -12,13 +12,16 @@ authRoute.post('/create-account', createUser)
 authRoute.post('/user-login', userLogin)
 authRoute.post('/resend-otp', otpResendLimiter, resendOTP)
 authRoute.post('/verify-otp', verifyOTP)
-authRoute.post('/user-logout', userLogout)
+authRoute.get('/user-logout', userLogout)
 authRoute.post('/account/deactivation-request', verifySession, deactivationRequest)
 authRoute.post('/account/deactivation', verifySession, deactivateAccount)
 authRoute.post('/account/delete-account-request', verifySession, deleteAccountRequest)
 authRoute.delete('/account/delete-account', verifySession, deleteUserAccount)
 authRoute.post('/account/password-reset-request', verifySession, userPasswordChangeRequest)
 authRoute.post('/account/change-password', verifySession, userPasswordChanged)
+authRoute.get('/account/check-auth', verifySession, checkAuth)
+authRoute.post('/account/forget-password', forgetPasswordRequest)
+authRoute.post('/account/password-reset', changePassword)
 // playlist routes
 export const playlistRoute = express.Router()
 playlistRoute.post('/create-playlist', verifySession, createPlaylist)
