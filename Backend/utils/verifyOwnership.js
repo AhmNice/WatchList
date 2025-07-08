@@ -18,7 +18,7 @@ export const verifyOwnership = async (req, res, next) => {
         message: 'No user found'
       })
     }
-    const playlist = await Playlist.findById(playlistId) 
+    const playlist = await Playlist.findById(playlistId)
     if (!playlist) {
       return res.status(404).json({
         success: false,

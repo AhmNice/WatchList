@@ -68,7 +68,7 @@ const Login = () => {
   useEffect(() => {
     if (success && authenticated) {
       toast.success("Welcome back, redirecting");
-      navigate("/index");
+      navigate("/dashboard");
     }
   }, [success, authenticated, navigate]);
 
@@ -174,7 +174,7 @@ const Login = () => {
             )}
             <div className="flex justify-end mt-2">
               <a
-                href="#"
+                href="forget-password"
                 className="Manrope-Regular text-sm text-[#A0A0A0] hover:text-[#E50000] transition-colors"
               >
                 Forgot password?
@@ -226,5 +226,5 @@ const Login = () => {
     </motion.div>
   );
 };
-
 export default Login;
+

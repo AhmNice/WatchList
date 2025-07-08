@@ -43,7 +43,7 @@ const Faq = () => {
 ];
 
   return (
-    <div className='pr-16 pl-16 mt-8  gap-5 w-full h-full'>
+    <div className='md:pr-16 md:pl-16 pr-8 pl-8 lg:pr-16 lg:pr-16 mt-8  gap-5 w-full h-full'>
          <div className='flex flex-col  lg:justify-between lg:items-center lg:flex-row gap-2 '>
             <div className='flex flex-col gap-2'>
                 <h2 className='Manrope-Bold text-2xl text-white'>Frequently Asked Questions</h2>

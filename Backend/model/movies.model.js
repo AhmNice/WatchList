@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const movieSchema = mongoose.Schema({
+
   title: {
     type: String,
     required: true
@@ -20,6 +21,7 @@ const movieSchema = mongoose.Schema({
     type:String
   },
   director: { type: String },
+  runtime:{type: Number},
   releaseYear: { type: Number },
   genre: { type: String },
   shared: { type: Boolean, default: false },

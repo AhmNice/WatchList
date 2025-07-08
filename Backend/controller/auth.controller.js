@@ -17,7 +17,6 @@ import { generateAccountDeleteToken, generateDeactivationToken, generateResetPas
 // ✅ Create User
 export const createUser = async (req, res) => {
   const { username, password, phoneNumber, email } = req.body;
-
   if (!username || !password || !phoneNumber || !email) {
     return res.status(400).json({ success: false, message: 'Required fields are empty' });
   }
@@ -470,3 +469,107 @@ export const deleteUserAccount = async (req, res) => {
     });
   }
 };
+//✅ check if user is authenticated
+export const checkAuth = async (req, res)=>{
+  const userId = req.userId;
+  if(!userId) {
+    return res.status(401).json({
+      success: false,
+      message: 'User is not authenticated'
+    })
+  }
+  try {
+      const user = await User.findById(userId).select(`-password -verificationToken -verificationTokenExpiresAt -resetPasswordToken -resetPasswordExpiresAt -deactivationToken -deactivationTokenExpiresAT -deleteAccountToken -deleteAccountTokenExpiresAt`);
+      if(!user){
+        return res.status(404).json({
+          success:false,
+          message: 'User not found'
+        })
+      }
+      return res.status(200).json({
+        success:true,
+        message: 'User is authenticated',
+        user:user
+      })
+  } catch (error) {
+    console.log(error.message)
+    res.status(500),json({
+      success: false,
+      message: 'Internal server error'
+    })
+  }
+}
+export const forgetPasswordRequest = async(req, res) => {
+  const { email } = req.body;
+  if(!email){
+    return res.status(400).json({
+      success: false,
+      message: 'Email is required'
+    })
+  }
+  try {
+    const user = await User.findOne({ email});
+    if(!user){
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    const resetToken = generateResetPasswordToken();
+    const resetTokenExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiry
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordTokenExpiresAt = resetTokenExpiresAt;
+    await user.save();
+    const resetLink = `${process.env.CLIENT_URL}/password/reset-request/${resetToken}`;
+    await sendPasswordResetEmail(user.username, user.email, resetLink);
+    return res.status(200).json({
+      success: true,
+      message: 'Password reset link has been sent to your email'
+    });
+  } catch (error) {
+    console.error('Error in forget password request:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+}
+export const changePassword = async(req, res) =>{
+  const { email, token, newPassword } = req.body;
+  if (!email || !token || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email, token, and new password are required'
+    });
+  }
+  try {
+    const user = await User.findOne({
+      email,
+      resetPasswordToken: token
+    })
+    if( !user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found or token is invalid'
+      });
+    }
+    if (user.resetPasswordTokenExpiresAt < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Reset token has expired'
+      });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordTokenExpiresAt = null;
+    await user.save();
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+
+  }
+}

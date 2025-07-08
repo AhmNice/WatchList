@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Playlist } from "../model/playlist.model.js";
 import { populateMovies } from "../utils/populateMovies.js";
+import { Movies } from "../model/movies.model.js";
 
 // ✅ Create Playlist
 export const createPlaylist = async (req, res) => {
@@ -76,19 +77,29 @@ export const getUserPlaylists = async (req, res) => {
   }
 
   try {
-    const playlists = await Playlist.find({ userId });
 
+    const playlists = await Playlist.find({ userId }).lean();
     if (playlists.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'No playlists found for this user',
+      return res.status(200).json({
+        success: true,
+        message: 'No playlists yet',
+        playlists: [],
       });
     }
+    const playlistsWithMovies = await Promise.all(
+      playlists.map(async (playlist) => {
+        const movieDocs = await Movies.find({ tmdbId: { $in: playlist.movies } });
+        return {
+          ...playlist,
+          movies: movieDocs,
+        };
+      })
+    );
 
     return res.status(200).json({
       success: true,
       message: 'Playlists retrieved successfully',
-      playlists,
+      playlists: playlistsWithMovies,
     });
 
   } catch (error) {
@@ -99,6 +110,7 @@ export const getUserPlaylists = async (req, res) => {
     });
   }
 };
+
 
 // ✅ Get Playlist by ID
 export const getPlaylistById = async (req, res) => {
@@ -221,7 +233,6 @@ export const deletePlaylist = async (req, res) => {
 // ✅ Remove Movie from Playlist
 export const removeMovieFromPlaylist = async (req, res) => {
   const { movieId, playlistId } = req.params;
-
   if (!movieId || !playlistId || !mongoose.Types.ObjectId.isValid(playlistId)) {
     return res.status(400).json({
       success: false,
@@ -318,7 +329,7 @@ export const createEmptyPlaylist = async (req, res) => {
 export const createSharedPlaylist = async (req, res) => {
   const { userId, playlist_name, description, shared, movies, users } = req.body;
 
-  if (!userId || !playlist_name || !description || !users || typeof shared !== 'boolean') {
+  if (!userId || !playlist_name  || typeof shared !== 'boolean') {
     return res.status(400).json({
       success: false,
       message: 'Required fields are empty or invalid',
@@ -361,9 +372,9 @@ export const createSharedPlaylist = async (req, res) => {
       description,
       userId,
       movies: movieIds,
-      users,
       shared,
     });
+    if(users) playlist.users = users
 
     await playlist.save();
 

@@ -37,8 +37,8 @@ const Categories = () => {
   //  )
   // }
   return (
-    <div className="mt-8 pl-16 pr-16">
-      <div className="mb-4 flex justify-between items-center">
+    <div className="md:mt-8 lg:mt-8 mt-12 md:pl-16 md:pr-16 lg:pr-16 lg:pr-16 pr-8 pl-8">
+      <div className="mb-4 flex justify-between items-center flex-col md:flex-row lg:flex-row">
         <div>
           <h2 className="text-white Manrope-Bold text-xl">
             Explore our wide variety of genres
@@ -48,7 +48,9 @@ const Categories = () => {
             everyone to enjoy.
           </p>
         </div>
+        <div  className="md:block lg:block hidden">
         <SliderControl slideRef={slideRef} itemsPerPage={5} />
+      </div>
       </div>
       <div ref={slideRef} className="flex gap-7 overflow-x-scroll scrollbar-none w-full py-4">
         {movieGenres.map((genre) => {

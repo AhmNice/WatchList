@@ -20,7 +20,10 @@
     font-family: Manrope-Light;
     src: url('../src/assets/fonts/Manrope-Light.ttf');
   }
-
+.SearchDivInput{
+    background-color: #333333;
+    border: 1px solid #262626;
+}
   .Manrope-Medium{
     font-family: Manrope-Medium;
   }

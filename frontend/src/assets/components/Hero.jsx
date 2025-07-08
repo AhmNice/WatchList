@@ -4,9 +4,12 @@ import { useMovieStore } from "../store/movieStore";
 import PosterCard from "./posterCard";
 import { Loader2, Plus } from "lucide-react";
 import Button from "./button/Button";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const { getAllMovie, movies, loading, success, errorMsg } = useMovieStore();
+  const navigate = useNavigate()
+
   useEffect(() => {
     getAllMovie();
   },[]);
@@ -19,7 +22,7 @@ const Hero = () => {
   }
   return (
     <div className="relative h-screen">
-      <div className="w-full overflow-hidden h-screen grid gap-2 grid-cols-9">
+      <div className="w-full overflow-hidden h-screen grid gap-2 grid-cols-3 md:grid-cols-9 lg:grid-cols-9">
         {movies?.map((movie) => (
           <PosterCard src={movie.poster} alt={movie.title} />
         ))}
@@ -41,7 +44,7 @@ const Hero = () => {
             </p>
           </div>
           <div className="flex items-center justify-center mt-4">
-            <Button bg={'bg-[#FF0000]'} hoverBg={'bg-[#E50000]'} text={'Start Now'} icon={<Plus size={24} className="text-white"/>}/>
+            <Button bg={'bg-[#FF0000]'} hoverBg={'bg-[#E50000]'} text={'Start Now'} icon={<Plus size={24} className="text-white"/>} onClick={()=>{navigate('/signup')}}/>
           </div>
         </div>
       </div>
