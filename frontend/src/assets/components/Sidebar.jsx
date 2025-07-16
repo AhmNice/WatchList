@@ -8,7 +8,8 @@ import {
   Compass,
   Bell,
   Settings,
-  LogOut
+  LogOut,
+  Sparkles
 } from 'lucide-react';
 import { NavLink, replace, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -22,13 +23,19 @@ const Sidebar = () => {
     const { width } = useScreen()
     const isMovie = width < 780
   const handleLogout = async()=> {
-    await logout();
+   try {
+     await logout();
+     navigate('/login')
+   } catch (error) {
+    console.log()
+   }
+
   }
-  
+
   const userSidebarLinks = [
     { label: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
     { label: "My Playlists", icon: <ListVideo size={20} />, path: "/playlists" },
-    { label: "Watch History", icon: <History size={20} />, path: "/history" },
+    { label: "Recommendation", icon: <Sparkles size={20} />, path: "/recommendations" },
     { label: "Favorites", icon: <Heart size={20} />, path: "/favorites" },
     { label: "Shared With Me", icon: <Users size={20} />, path: "/shared" },
     { label: "Discover", icon: <Compass size={20} />, path: "/discover" },
@@ -87,9 +94,9 @@ const Sidebar = () => {
               <span className="text-sm font-medium">W</span>
             </div>
           </NavLink>
-          <NavLink to="/logout" className="flex justify-center p-3 rounded-lg text-gray-300 hover:bg-[#262626]">
+          <button to="/logout" onClick={()=> handleLogout()} className="flex justify-center p-3 rounded-lg text-gray-300 hover:bg-[#262626]">
             <LogOut size={20} />
-          </NavLink>
+          </button>
         </>
       )}
     </div>

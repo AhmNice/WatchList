@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Mail } from 'lucide-react'; // Fixed icon imports
+import { Loader2, Lock } from 'lucide-react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 const ForgePasswordReset = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +12,22 @@ const ForgePasswordReset = () => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [location, setLocation] = useState('');
+  const { changePasswordInAccount,changePasswordOutside, user, success, errorMsg, loading} = useAuthStore()
+
+  const navigate = useNavigate();
+  const { token } = useParams();
+
+  useEffect(() => {
+    if (success) {
+      navigate('/dashboard');
+    }
+  }, [success, navigate]);
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,9 +36,48 @@ const ForgePasswordReset = () => {
       [name]: value
     }));
 
-    // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const getDeviceType = () => {
+    const ua = navigator.userAgent;
+    if (/Mobi|Android/i.test(ua)) return "mobile";
+    if (/Tablet|iPad/i.test(ua)) return "tablet";
+    return "desktop";
+  };
+
+  const getLocation = async () => {
+    try {
+      const response = await axios.get('https://ipapi.co/json/');
+      const { city, region, country_name } = response.data;
+      setLocation(`${city}, ${region}, ${country_name}`);
+    } catch (err) {
+      console.error('Failed to fetch location');
+      setLocation('Unknown location');
+    }
+  };
+
+  const submit = async () => {
+    const payload = {
+      userId: user?._id,
+      token: token,
+      deviceType: getDeviceType(),
+      location: location,
+      password: formData.password
+    };
+    setIsSubmitting(true)
+    try {
+      if(user?._id){
+        await changePasswordInAccount(payload)
+      }else{
+        changePasswordOutside(payload)
+      }
+      toast.success(`password reset successfully, redirecting...`);
+    } catch (error) {
+      console.error('Password reset error:', error);
+      toast.error(error?.response?.data?.message || 'Failed to reset password');
     }
   };
 
@@ -41,9 +100,7 @@ const ForgePasswordReset = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Proceed with password reset logic
-      console.log('Password reset submitted:', formData);
-      // Add your API call or state management here
+      submit();
     }
   };
 
@@ -52,7 +109,7 @@ const ForgePasswordReset = () => {
       initial={{ opacity: 0, y: 25 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, type: "spring" }}
-      className="bg-[#1A1A1A] shadow-lg w-full max-w-md overflow-hidden pt-8 pb-8 rounded-xl border border-[#262626]" // Added pb-8 for bottom padding
+      className="bg-[#1A1A1A] shadow-lg w-full max-w-md overflow-hidden pt-8 pb-8 rounded-xl border border-[#262626]"
     >
       <div className="w-full flex flex-col items-center justify-center mb-6 px-8">
         <motion.img
@@ -141,13 +198,17 @@ const ForgePasswordReset = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="pt-2" // Added some top padding
+            className="pt-2"
           >
             <button
               type="submit"
-              className="w-full Manrope-SemiBold bg-[#E50000] text-white py-3 px-4 rounded-lg hover:bg-[#FF1919] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E50000] focus:ring-offset-2 focus:ring-offset-[#1A1A1A]"
+              disabled={  isLoading }
+              className="w-full flex cursor-pointer items-center justify-center disabled:cursor-not-allowed Manrope-SemiBold disabled:bg-[#E50000]/50 disabled:text-white/50 bg-[#E50000] text-white py-3 px-4 rounded-lg hover:bg-[#FF1919] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E50000] focus:ring-offset-2 focus:ring-offset-[#1A1A1A]"
             >
-              Reset Password
+              {isLoading ? (<>
+              <Loader2 size={14} className='text-white animate-spin'/>
+                <span>'Resetting Password...'</span>
+              </>) : 'Reset Password'}
             </button>
           </motion.div>
         </div>

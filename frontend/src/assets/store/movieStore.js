@@ -18,9 +18,9 @@ export const useMovieStore = create(
     (set, get) => ({
       ...initialStates,
 
-      getAllMovie: async () => {
+      getAllMovie: async ( force = true) => {
         const { movies } = get();
-        if (movies && movies.length > 0) return;
+        if (!force && movies && movies.length > 0) return;
         set({ loading: true, success: false, errorMsg: null });
         try {
           const { data } = await axios.get(`${movieBaseURL}/all-movies`);

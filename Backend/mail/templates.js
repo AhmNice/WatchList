@@ -44,7 +44,57 @@ export const accountVerificationTemplate = `<!DOCTYPE html>
   </div>
 </body>
 </html>`
-export const resetPasswordTemplate =''
+export const resetPasswordTemplate = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Reset - WatchList</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @media only screen and (max-width: 480px) {
+      .container {
+        margin: 20px auto !important;
+        padding: 24px !important;
+      }
+      .button {
+        padding: 12px 6px !important;
+      }
+    }
+  </style>
+</head>
+<body style="font-family: 'Manrope', Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0;">
+  <div class="container" style="max-width: 480px; margin: 40px auto; background: #fff; box-shadow: 0 2px 8px #eee; padding: 32px;">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 16px 0; color: #E50000;">Reset Your Password</h1>
+      <div style="height: 4px; width: 60px; background: #E50000; margin: 0 auto;"></div>
+    </div>
+
+    <p style="margin: 16px 0;">Hello {userName},</p>
+    <p style="margin: 16px 0;">We received a request to reset your WatchList account password.</p>
+    <p style="margin: 16px 0;">Click the button below to set a new password:</p>
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="{resetLink}" class="button" style="background-color: #E50000; color: white; padding: 16px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+        Reset Password
+      </a>
+    </div>
+
+    <p style="margin: 16px 0;">This link will expire in {expirationTime}. If you didn't request a password reset, please ignore this email or contact support if you have questions.</p>
+
+    <p style="margin: 16px 0; font-size: 14px; color: #666;">
+      <strong>Note:</strong> For security reasons, we don't store your password. This link gives you access to set a new one.
+    </p>
+
+    <p style="margin: 32px 0 16px 0;">Best regards,<br><strong>The WatchList Team</strong></p>
+
+    <div style="margin-top: 40px; font-size: 12px; color: #888; text-align: center;">
+      &copy; WatchList, 2025<br>
+      <span style="color: #bbb; font-size: 11px;">This is an automated message - please do not reply</span>
+    </div>
+  </div>
+</body>
+</html>`;
 export const welcomeTemplate =`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +109,7 @@ export const welcomeTemplate =`<!DOCTYPE html>
         padding: 24px !important;
       }
       .button {
-        padding: 12px 0 !important;
+        padding: 12px 6px !important;
       }
     }
   </style>
@@ -111,7 +161,7 @@ export const passwordResetTemplate =`<!DOCTYPE html>
         padding: 24px !important;
       }
       .button {
-        padding: 12px 0 !important;
+        padding: 12px 6px !important;
       }
     }
   </style>
@@ -219,7 +269,7 @@ export const accountDeletionTemplate =`<!DOCTYPE html>
         padding: 24px !important;
       }
       .button {
-        padding: 12px 0 !important;
+        padding: 12px 6px !important;
       }
     }
   </style>
@@ -480,7 +530,7 @@ export const deactivateAccountRequestTemplate =`<!DOCTYPE html>
         padding: 24px !important;
       }
       .button {
-        padding: 12px 0 !important;
+        padding: 12px 6px !important;
       }
     }
   </style>

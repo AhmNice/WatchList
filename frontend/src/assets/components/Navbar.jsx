@@ -13,7 +13,7 @@ const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Movies', path: '/movies' },
     { name: 'Support', path: '/support' },
-    { name: 'Subscription', path: '/subscription' }
+    // { name: 'Subscription', path: '/subscription' }
   ]
 
   const onClose = () => setSearchModalActive(false)
@@ -33,7 +33,7 @@ const Navbar = () => {
         {mobileMenuOpen ? <X size={24} /> : <span>☰</span>}
       </button>
         <img
-          src="Vector.png"
+          src="/Vector.png"
           alt="WatchList logo"
           width={'40px'}
         />

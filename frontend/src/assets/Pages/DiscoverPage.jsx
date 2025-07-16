@@ -6,14 +6,18 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import MovieCard from '../components/Cards/MovieCard';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import AddToPlaylistModal from '../components/modals/AddToPlaylistModal';
 
 const DiscoverPage = () => {
+  const navigate = useNavigate()
   const { movies, getAllMovie, loading, error } = useMovieStore();
   const [currentPage, setCurrentPage] = useState(1)
   const moviesPerPage = 20;
   const [filteredMovies, setFilteredMovies] = React.useState([])
   const [ optionToShow, setOptionToShow ] = useState()
   const [ movieToAdd, setMovieTo ] = useState(null)
+  const [addToPlaylistModal, setAddToPlaylistModal] =useState(false)
   const [whereToAdd, setWhereToAdd ] = useState(null)
   const onWatchLater = (movie)=>{
     setMovieTo(movie)
@@ -21,9 +25,11 @@ const DiscoverPage = () => {
   }
   const AddToPlaylist = (movie)=>{
     setMovieTo(movie)
+    setAddToPlaylistModal(true)
+    console.log(movie)
   }
   useEffect(() => {
-    document.title = 'WatchList - Discover';
+    document.title = 'Discover - WatchList';
     if (!movies || movies.length === 0) {
       getAllMovie();
     }
@@ -41,6 +47,7 @@ const DiscoverPage = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
   return (
     <section className="w-full h-screen flex bg-[#141414] overflow-auto">
+      {movieToAdd && addToPlaylistModal && <AddToPlaylistModal movieId={movieToAdd.tmdbId}  onClose={()=>{setAddToPlaylistModal((prev)=> !prev)}} />}
       <div className=" h-full flex-shrink-0">
         <Sidebar />
       </div>
@@ -59,7 +66,7 @@ const DiscoverPage = () => {
             </h2>
           </div>
           <div className="">
-            {loading && (
+            {loading && movies.length === 0 && (
               <div className='flex items-center justify-center h-96'>
                 <Loader2 className='text-[#E50000] animate-spin' size={24} />
               </div>
@@ -76,7 +83,8 @@ const DiscoverPage = () => {
                       onOptionClick={()=>{
                         setOptionToShow( optionToShow === index ? null : index )
                       }}
-                      onAddToPlaylist={''}
+                      onClick={()=>{navigate(`movie/${movie.tmdbId}`)}}
+                      onAddToPlaylist={()=>AddToPlaylist(movie)}
                       onWatchLater={''}
                     />
                   ))}

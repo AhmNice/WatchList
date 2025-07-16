@@ -10,8 +10,10 @@ import MovieCard from "../components/Cards/MovieCard";
 import { useMovieStore } from "../store/movieStore";
 import { usePlaylistStore } from "../store/playlistStore";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate()
    const stats = [
   {
     title: "Movies Watched",
@@ -64,7 +66,7 @@ console.log(movies)
         </div>
 
         {/* Scrollable Content - flex-1 to take remaining space */}
-        <div className="flex-1 w-full overflow-y-auto p-6">
+        <div className="flex-1 w-full scrollbar-none overflow-y-auto p-6">
           <WelcomeCard userName={user?.username} />
 
           {/* Stats Grid - responsive columns */}
@@ -86,7 +88,7 @@ console.log(movies)
             <h2 className="Manrope-SemiBold text-lg text-white">Latest From Your Playlist</h2>
             {playlists && playlists.length> 0 && (
                <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-4">
-              {playlists?.map((playlist) => (
+              {playlists?.slice(0,4).map((playlist) => (
                 <UpdateCard
                   key={playlist.id}
                   playlist={playlist}
@@ -116,6 +118,9 @@ console.log(movies)
                     key={movie.id}
                     movie={movie}
                     showRating={true}
+                    onClick={()=>{
+                      navigate(`/discover/movie/${movie.tmdbId}`)
+                    }}
                   />
                 ))
               )}

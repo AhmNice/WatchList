@@ -14,14 +14,15 @@ const movieSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  vote:{
-    type:String
+  vote: {
+    type: String
   },
-  reviews:{
-    type:String
+  reviews: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reviews'
   },
   director: { type: String },
-  runtime:{type: Number},
+  runtime: { type: Number },
   releaseYear: { type: Number },
   genre: { type: String },
   shared: { type: Boolean, default: false },

@@ -11,9 +11,11 @@ const Hero = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if(movies.length === 0){
     getAllMovie();
+    }
   },[]);
-  if (loading) {
+  if (loading && movies.length === 0) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
         <Loader2 className="animate-spin text-red-900"></Loader2>

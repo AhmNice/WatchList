@@ -46,7 +46,7 @@ export const sendWelcomeEmail = async (userName, email) => {
   }
 };
 // ✅ Send Password Reset Email
-export const sendPasswordResetEmail = async (userName, email, resetLink) => {
+export const sendPasswordResetEmail = async (userName, email, resetLink,expirationTime) => {
   const mailOptions = {
     from: `WatchList <${process.env.MAIL_USER}>`,
     to: email,
@@ -54,6 +54,7 @@ export const sendPasswordResetEmail = async (userName, email, resetLink) => {
     html: resetPasswordTemplate
       .replace('{userName}', userName)
       .replace('{resetLink}', resetLink)
+      .replace('{expirationTime}',expirationTime)
   };
   try {
     await transporter.sendMail(mailOptions);

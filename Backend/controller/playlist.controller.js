@@ -111,7 +111,6 @@ export const getUserPlaylists = async (req, res) => {
   }
 };
 
-
 // ✅ Get Playlist by ID
 export const getPlaylistById = async (req, res) => {
   const { playlistId } = req.params;

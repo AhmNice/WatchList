@@ -65,7 +65,7 @@ const SearchModal = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className=" absolute fixed inset-0 z-50 bg-[#141414]/95 backdrop-blur-sm p-4 overflow-y-auto"
+      className=" absolute fixed inset-0 z-60 bg-[#141414]/95 backdrop-blur-sm p-4 overflow-y-auto"
     >
       <div className="max-w-2xl mx-auto relative">
         {/* Close Button */}

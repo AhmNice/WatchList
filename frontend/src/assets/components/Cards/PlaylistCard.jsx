@@ -73,7 +73,7 @@ const PlaylistCard = ({
         cursor-pointer
         shadow-lg
         h-full
-        hover:z-60
+        hover:z-50
       "
     >
       {/* Playlist Image */}

@@ -72,8 +72,8 @@ export const getAllMovies = async (req, res) => {
       });
 
       for (const movie of response.data.results) {
-        // Fetch full movie details
-        const [detailsRes, creditsRes] = await Promise.all([
+        // Fetch full movie details, credits, and videos (for trailer)
+        const [detailsRes, creditsRes, videosRes] = await Promise.all([
           axios.get(`${movieBaseUrl}/movie/${movie.id}`, {
             headers: {
               Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`
@@ -83,22 +83,41 @@ export const getAllMovies = async (req, res) => {
             headers: {
               Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`
             }
+          }),
+          axios.get(`${movieBaseUrl}/movie/${movie.id}/videos`, {
+            headers: {
+              Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`
+            }
           })
         ]);
 
         const directorObj = creditsRes.data.crew.find(c => c.job === 'Director');
-        const castArr = creditsRes.data.cast.slice(0, 5).map(c => c.name); // Top 5 cast
+
+        const castArr = creditsRes.data.cast.slice(0, 5).map(c => ({
+          id: c.id,
+          name: c.name,
+          profile_path: c.profile_path
+        }));
+
+        const trailerObj = videosRes.data.results.find(
+          v => v.type === 'Trailer' && v.site === 'YouTube'
+        );
+
+        const trailer = trailerObj ? `https://www.youtube.com/watch?v=${trailerObj.key}` : null;
 
         allMovies.push({
           tmdbId: movie.id,
           title: movie.title,
+          backdrop: `https://image.tmdb.org/t/p/w500${movie.backdrop_path}`,
           poster: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
           genre_ids: movie.genre_ids,
+          overview: movie.overview,
           director: directorObj?.name || null,
           cast: castArr,
           runtime: detailsRes.data.runtime,
           releaseYear: movie.release_date ? Number(movie.release_date.slice(0, 4)) : undefined,
-          vote: movie.vote_average?.toString()
+          vote: movie.vote_average?.toString(),
+          trailer
         });
       }
     }
@@ -117,6 +136,7 @@ export const getAllMovies = async (req, res) => {
     });
   }
 };
+
 // search for a movie
 export const searchMovie = async (req, res) => {
   const { query } = req.query;
@@ -159,31 +179,31 @@ export const multi_search = async (req, res) => {
   try {
     const url = `${movieBaseUrl}/search/multi?query=${encodeURIComponent(query)}`;
     const response = await axios.get(url, {
-      headers:{
+      headers: {
         Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
       }
     });
     res.status(200).json({
-      success:true,
-      message:'Search result',
+      success: true,
+      message: 'Search result',
       results: response.data.results
     })
 
   } catch (error) {
     console.log('Error trying to search with multi search', error.message)
     return res.status(500).json({
-      success:false,
-      message:'Internal server error'
+      success: false,
+      message: 'Internal server error'
     })
   }
 }
 // getting movies base on genre
-export const getMovieByGenre = async(req, res)=>{
+export const getMovieByGenre = async (req, res) => {
   const { genre_id } = req.body
-  if(!genre_id){
+  if (!genre_id) {
     return res.status(400).json({
-      success:false,
-      message:'Genre is required, please select a genre'
+      success: false,
+      message: 'Genre is required, please select a genre'
     })
   }
   try {

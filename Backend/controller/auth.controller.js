@@ -213,7 +213,8 @@ export const userPasswordChangeRequest = async (req, res) => {
     await user.save();
 
     const resetLink = `${process.env.CLIENT_URL}/password/reset-request/${token}`;
-    await sendPasswordResetEmail(user.username, user.email, resetLink);
+   const expirationTime = '15 minutes'
+    await sendPasswordResetEmail(user.username, user.email, resetLink,expirationTime);
 
     return res.status(200).json({
       success: true,
@@ -268,15 +269,29 @@ export const userPasswordChanged = async (req, res) => {
     user.resetPasswordToken = null;
     user.resetPasswordExpiresAt = null;
 
-    const resetDate = new Date().toLocaleDateString();
-    const resetTime = new Date().toLocaleTimeString();
+    const resetDate = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    ;
+    const resetTime = new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true, // true for AM/PM, false for 24hr
+    });
 
+    ;
+    user.passwordLastChanged = Date.now()
     await passwordChangedSuccessEmail(user.username, user.email, resetDate, deviceType, location, resetTime);
     await user.save();
 
     return res.status(200).json({
       success: true,
-      message: 'Password changed successfully'
+      message: 'Password changed successfully',
+      user:user
     });
 
   } catch (error) {
@@ -470,46 +485,46 @@ export const deleteUserAccount = async (req, res) => {
   }
 };
 //✅ check if user is authenticated
-export const checkAuth = async (req, res)=>{
+export const checkAuth = async (req, res) => {
   const userId = req.userId;
-  if(!userId) {
+  if (!userId) {
     return res.status(401).json({
       success: false,
       message: 'User is not authenticated'
     })
   }
   try {
-      const user = await User.findById(userId).select(`-password -verificationToken -verificationTokenExpiresAt -resetPasswordToken -resetPasswordExpiresAt -deactivationToken -deactivationTokenExpiresAT -deleteAccountToken -deleteAccountTokenExpiresAt`);
-      if(!user){
-        return res.status(404).json({
-          success:false,
-          message: 'User not found'
-        })
-      }
-      return res.status(200).json({
-        success:true,
-        message: 'User is authenticated',
-        user:user
+    const user = await User.findById(userId).select(`-password -verificationToken -verificationTokenExpiresAt -resetPasswordToken -resetPasswordExpiresAt -deactivationToken -deactivationTokenExpiresAT -deleteAccountToken -deleteAccountTokenExpiresAt`);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
       })
+    }
+    return res.status(200).json({
+      success: true,
+      message: 'User is authenticated',
+      user: user
+    })
   } catch (error) {
     console.log(error.message)
-    res.status(500),json({
+    res.status(500), json({
       success: false,
       message: 'Internal server error'
     })
   }
 }
-export const forgetPasswordRequest = async(req, res) => {
+export const forgetPasswordRequest = async (req, res) => {
   const { email } = req.body;
-  if(!email){
+  if (!email) {
     return res.status(400).json({
       success: false,
       message: 'Email is required'
     })
   }
   try {
-    const user = await User.findOne({ email});
-    if(!user){
+    const user = await User.findOne({ email });
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found'
@@ -534,9 +549,9 @@ export const forgetPasswordRequest = async(req, res) => {
     });
   }
 }
-export const changePassword = async(req, res) =>{
-  const { email, token, newPassword } = req.body;
-  if (!email || !token || !newPassword) {
+export const changePassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  if ( !token || !newPassword) {
     return res.status(400).json({
       success: false,
       message: 'Email, token, and new password are required'
@@ -544,10 +559,9 @@ export const changePassword = async(req, res) =>{
   }
   try {
     const user = await User.findOne({
-      email,
       resetPasswordToken: token
     })
-    if( !user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: 'User not found or token is invalid'
@@ -563,7 +577,13 @@ export const changePassword = async(req, res) =>{
     user.password = hashedPassword;
     user.resetPasswordToken = null;
     user.resetPasswordTokenExpiresAt = null;
+    user.passwordLastChanged= Date.now()
     await user.save();
+    res.status(200).json({
+      success:true,
+      message:'password updated',
+      user:user
+    })
   } catch (error) {
     console.error('Error changing password:', error);
     return res.status(500).json({
@@ -573,3 +593,55 @@ export const changePassword = async(req, res) =>{
 
   }
 }
+export const updateAccount = async (req, res) => {
+  const { userId, userName, email, bio, profileImage } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      message: 'User ID is required'
+    });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid user ID'
+    });
+  }
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Only update fields if provided
+    if (typeof bio === 'string') user.bio = bio;
+    if (typeof email === 'string'){
+      user.email = email;
+      user.isVerified = false
+    }
+    if (typeof userName === 'string') user.username = userName;
+    if (typeof profileImage === 'string') user.profilePath = profileImage;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Account updated successfully',
+      user
+    });
+
+  } catch (error) {
+    console.error("Update account error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};

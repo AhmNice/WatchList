@@ -11,6 +11,12 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  bio:{
+    type:String
+  },
+  profilePath:{
+    type:String
+  },
   phoneNumber: {
     type: String,
     required: true,
@@ -48,9 +54,9 @@ const userSchema = mongoose.Schema({
     type:Boolean,
     default:true
   },
-
+  passwordLastChanged:Date,
   resetPasswordToken: String,
-  resetPasswordExpiresAt: Date,
+  resetPasswordTokenExpiresAt: Date,
   verificationToken: String,
   verificationTokenExpiresAt: Date,
   deactivationToken: String,

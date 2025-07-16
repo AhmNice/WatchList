@@ -3,6 +3,7 @@ import { useMovieStore } from '../store/movieStore';
 import MovieCard from '../components/Cards/MovieCard';
 import Navbar from '../components/Navbar';
 import { ChevronLeft, ChevronRight, Loader2, Search, Sliders } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const MoviesPage = () => {
   const { movies, getAllMovie, loading, error } = useMovieStore();
@@ -15,6 +16,7 @@ const MoviesPage = () => {
     year: '',
     genre: ''
   });
+  const navigate = useNavigate()
   const genreMap = {
     28: "Action",
     12: "Adventure",
@@ -105,7 +107,7 @@ const MoviesPage = () => {
     setFilters({ name: '', year: '', genre: '' });
   };
 
-  if (loading) {
+  if (loading && movies.length === 0) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-[#141414]">
         <Loader2 size={25} className='animate-spin text-[#E50000]' />
@@ -205,11 +207,13 @@ const MoviesPage = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {currentMovies.map((movie, index) => (
                 <MovieCard
-                  key={movie.id || movie._id}
+                  key={movie.tmdbId || movie.tmdbId}
                   movie={movie}
                   showRating={true}
                   showDropDown={activeCard === index}
-                  onClick={() => setActiveCard(activeCard === index ? null : index)}
+                  onClick={() => {setActiveCard(activeCard === index ? null : index)
+                    navigate(`${movie.tmdbId}`)
+                  }}
                 />
               ))}
             </div>

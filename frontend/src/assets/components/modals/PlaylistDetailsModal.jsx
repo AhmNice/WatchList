@@ -15,7 +15,7 @@ const PlaylistDetailsModal = ({ playlist, onClose, handlePick }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-[#141414]/80 backdrop-blur-sm z-50 flex justify-center items-center p-4"
+      className="fixed inset-0  bg-[#141414]/80 backdrop-blur-sm z-60 flex justify-center items-center p-4"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}

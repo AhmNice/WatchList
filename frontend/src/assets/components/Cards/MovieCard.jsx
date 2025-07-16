@@ -26,7 +26,6 @@ const MovieCard = ({
     const mins = minutes % 60;
     return `${hours > 0 ? `${hours}hrs ` : ""}${mins}mins`;
   };
-  console.log(movie.releaseYear)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const optionRef = useRef(null)
   const options = [
@@ -38,14 +37,14 @@ const MovieCard = ({
         onAddToPlaylist?.();
       }
     },
-    {
-      type: 'Watch Later',
-      icon: <Heart size={14} className="text-[#B3B3B3]" />,
-      action: () => {
-        setIsOptionsOpen(false);
-        onWatchLater?.();
-      }
-    },
+    // {
+    //   type: 'Watch Later',
+    //   icon: <Heart size={14} className="text-[#B3B3B3]" />,
+    //   action: () => {
+    //     setIsOptionsOpen(false);
+    //     onWatchLater?.();
+    //   }
+    // },
   ]
   const handleOptionClick = (e) => {
     e.stopPropagation();
@@ -187,12 +186,12 @@ const MovieCard = ({
         </div>
 
         <div className="flex justify-between mt-2 text-gray-400 text-xs">
-          <div className="flex items-center">
+          <div className="flex items-center Manrope-Regular">
             <Calendar size={14} className="mr-1" />
             <span>{movie?.releaseYear || "N/A"}</span>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center Manrope-Regular">
             <Clock size={14} className="mr-1" />
             <span>{formatRuntime(movie?.runtime)}</span>
           </div>

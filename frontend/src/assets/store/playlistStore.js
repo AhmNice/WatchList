@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
-axios.defaults.timeout = 10000; 
 axios.defaults.withCredentials = true;
 
 const initialState = {
@@ -89,6 +88,25 @@ export const usePlaylistStore = create(
             errorMsg: error.message || 'Could not remove movie',
           });
         }
+      },
+      addMovieToPlaylist: async(playlistId, userId, payload)=>{
+          set({loadingPlaylist:true, success:false});
+          try {
+            const { data } = await axios.patch(`${playlistBaseUrl}/update-playlist/${playlistId}/${userId}`, payload);
+            set({
+              playlists:Array.isArray(data.playlist) ? data.playlist : [],
+              loadingPlaylist:false,
+              success:true,
+              errorMsg:null
+            })
+          } catch (error) {
+            console.log(error.message)
+             set({
+            success: false,
+            loadingPlaylist: false,
+            errorMsg: error.message || 'Could not add movie',
+          });
+          }
       },
       deletePlaylist: async(playlistId, userId) =>{
         set({loadingPlaylist: true, success:false})

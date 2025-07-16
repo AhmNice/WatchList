@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import { connectDB } from './db/database.js'
 import cors from 'cors'
-import { authRoute, movieRoute, playlistRoute } from './routes/routes.js'
+import { authRoute, favoriteRoute, movieRoute, playlistRoute, recommendationRoute } from './routes/routes.js'
 
 dotenv.config()
 const app = express()
@@ -17,6 +17,8 @@ app.use(cookieParser());
 app.use('/auth', authRoute)
 app.use('/playlist', playlistRoute)
 app.use('/movie', movieRoute)
+app.use('/favorite', favoriteRoute)
+app.use('/recommendation', recommendationRoute)
 const startServer = async()=>{
     console.log('Connecting....')
    try {

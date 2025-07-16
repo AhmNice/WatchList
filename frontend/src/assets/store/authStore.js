@@ -2,7 +2,9 @@ import axios from 'axios';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { usePlaylistStore } from './playlistStore';
-
+import { useMovieStore } from './movieStore';
+import { useFavStore } from './favoriteStore';
+import { useRecommendationStore } from './recommendationStore';
 axios.defaults.withCredentials = true;
 
 const initialStates = {
@@ -119,12 +121,53 @@ export const useAuthStore = create(
           throw error;
         }
       },
-
-      checkAuth: async () => {
+      changePasswordInAccount:async(payload)=>{
+        set({loading: true, success:false, errorMsg:null})
+        try {
+          const { data }= await axios.post(`${serverURL_AUTH}/account/change-password`, payload);
+          set({
+            loading:false,
+            success:true,
+            errorMsg:null,
+            user:data.user
+          })
+        } catch (error) {
+          console.log(error.message)
+          set({
+            success:false,
+            errorMsg:error.response?.data?.message,
+            loading:false
+          })
+        }
+      },
+      changePasswordOutside : async(payload)=>{
+        set({
+          loading:true,
+          success:false,
+          errorMsg:null
+        })
+        try {
+          const { data } = await axios.post(`${serverURL_AUTH}/account/password-reset`,payload)
+          set({
+            success:true,
+            errorMsg:null,
+            loading:false,
+            user:data.user
+          })
+        } catch (error) {
+          console.log(error.message)
+          set({
+            success:false,
+            errorMsg:error?.response?.data?.message,
+            loading:false
+          })
+        }
+      },
+      checkAuth: async (force = false) => {
         set({ checkingAuth: true, loading: true, errorMsg: null });
 
         const authenticated = get().authenticated;
-        if (authenticated) {
+        if (authenticated && !force) {
           set({ checkingAuth: false, loading: false });
           return;
         }
@@ -146,13 +189,20 @@ export const useAuthStore = create(
 
       logout: async () => {
         set({ loading: true, errorMsg: null, success: false });
+
         try {
           await axios.get(`${serverURL_AUTH}/user-logout`);
+
+          // Clear persisted state from storage
+          await useAuthStore.persist.clearStorage();
+          await usePlaylistStore.persist.clearStorage();
+          await useFavStore.persist.clearStorage();
+          await useRecommendationStore.persist.clearStorage();
+          // Reset Zustand in-memory state
           set({ ...initialStates, checkingAuth: false });
-          // Clear persisted state
-          useAuthStore.persist.clearStorage();
-          usePlaylistStore.persist.clearStorage();
           usePlaylistStore.getState().resetPlaylist();
+          useMovieStore.getState().resetMovieStore();
+
         } catch (error) {
           console.error('Logout error:', error);
           set({
@@ -161,7 +211,8 @@ export const useAuthStore = create(
             success: false
           });
         }
-      },
+      }
+      ,
 
       reset: () => set({ ...initialStates, checkingAuth: false })
     }),
