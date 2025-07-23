@@ -50,6 +50,7 @@ export const useRecommendationStore = create(
           });
         }
       },
+      resetState: ()=> set({...initialState})
     }),
     {
       name: "recommendations",

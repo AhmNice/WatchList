@@ -5,7 +5,7 @@ import { Movies } from "../model/movies.model.js";
 
 // ✅ Create Playlist
 export const createPlaylist = async (req, res) => {
-  const { userId, playlist_name, description, movies } = req.body;
+  const { userId, playlist_name, description, movies, isShared } = req.body;
 
   if (!userId || !playlist_name || !description) {
     return res.status(400).json({
@@ -37,6 +37,31 @@ export const createPlaylist = async (req, res) => {
       });
     }
 
+    const generateRandomCode = () => {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      const numbers = '0123456789';
+      let code = '';
+      let numCount = 0;
+
+      // Ensure at least 3 numbers
+      for (let i = 0; i < 3; i++) {
+        const n = numbers.charAt(Math.floor(Math.random() * numbers.length));
+        code += n;
+        numCount++;
+      }
+
+      // Fill the rest (5 more) with random letters or numbers
+      for (let i = 0; i < 5; i++) {
+        const chars = letters + numbers;
+        const char = chars.charAt(Math.floor(Math.random() * chars.length));
+        if (numbers.includes(char)) numCount++;
+        code += char;
+      }
+
+      // Shuffle the code so numbers are not always at the start
+      code = code.split('').sort(() => Math.random() - 0.5).join('');
+      return code
+    }
     const movieIds = movies.map(movie => movie.tmdbId);
 
     const playlist = new Playlist({
@@ -44,6 +69,8 @@ export const createPlaylist = async (req, res) => {
       description,
       userId,
       movies: movieIds,
+      shareCode: generateRandomCode(),
+      shared: isShared
     });
 
     await populateMovies(movies)
@@ -150,7 +177,7 @@ export const getPlaylistById = async (req, res) => {
 // ✅ Update Playlist
 export const updatePlaylist = async (req, res) => {
   const { playlistId } = req.params;
-  const { movies, playlist_name, description } = req.body;
+  const { movies, playlist_name, description, shared } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(playlistId)) {
     return res.status(400).json({
@@ -170,12 +197,12 @@ export const updatePlaylist = async (req, res) => {
 
     if (playlist_name) playlist.title = playlist_name;
     if (description) playlist.description = description;
-
+    if (typeof shared === "boolean") playlist.shared = shared;
     if (Array.isArray(movies) && movies.length > 0) {
       const moviesId = movies.map(movie => movie.tmdbId);
       playlist.movies = Array.from(new Set([...playlist.movies, ...moviesId]));
     }
-    await populateMovies(movies)
+    if (movies) await populateMovies(movies)
     await playlist.save();
 
     return res.status(200).json({
@@ -183,7 +210,6 @@ export const updatePlaylist = async (req, res) => {
       message: 'Playlist updated successfully',
       playlist,
     });
-
   } catch (error) {
     console.error('Error updating playlist:', error.message);
     return res.status(500).json({
@@ -328,7 +354,7 @@ export const createEmptyPlaylist = async (req, res) => {
 export const createSharedPlaylist = async (req, res) => {
   const { userId, playlist_name, description, shared, movies, users } = req.body;
 
-  if (!userId || !playlist_name  || typeof shared !== 'boolean') {
+  if (!userId || !playlist_name || typeof shared !== 'boolean') {
     return res.status(400).json({
       success: false,
       message: 'Required fields are empty or invalid',
@@ -348,8 +374,8 @@ export const createSharedPlaylist = async (req, res) => {
       message: 'Movies must be a non-empty array',
     });
   }
-  if(!Array.isArray(users) || users.length === 0){
-     return res.status(400).json({
+  if (!Array.isArray(users) || users.length === 0) {
+    return res.status(400).json({
       success: false,
       message: 'Users must be a non-empty array',
     });
@@ -373,7 +399,7 @@ export const createSharedPlaylist = async (req, res) => {
       movies: movieIds,
       shared,
     });
-    if(users) playlist.users = users
+    if (users) playlist.users = users
 
     await playlist.save();
 
@@ -448,27 +474,19 @@ export const removeUserFromSharedPlaylist = async (req, res) => {
   }
 };
 
-export const addUsersToSharedPlaylist = async (req, res) => {
-  const { playlistId } = req.params;
-  const { usersToAdd } = req.body;
-
+export const addUserToSharedPlaylist = async (req, res) => {
+  const { playlistShareCode } = req.params;
+  const { userToAdd } = req.body;
   // Validate input
-  if (!Array.isArray(usersToAdd) || usersToAdd.length === 0) {
+  if (!playlistShareCode || !userToAdd) {
     return res.status(400).json({
       success: false,
-      message: 'Users to add list cannot be empty',
-    });
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(playlistId)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid playlist ID',
+      message: 'Users to add or shareCode list cannot be empty',
     });
   }
 
   try {
-    const playlist = await Playlist.findById(playlistId);
+    const playlist = await Playlist.findOne({ shareCode: playlistShareCode });
 
     if (!playlist) {
       return res.status(404).json({
@@ -476,7 +494,13 @@ export const addUsersToSharedPlaylist = async (req, res) => {
         message: 'Playlist not found',
       });
     }
-
+    if (playlist.userId === userToAdd) {
+      return res.status(400).json({
+        success: false,
+        message: "You can't join a playlist you own",
+        userToAdd,
+      })
+    }
     // Ensure sharedWith exists
     if (!Array.isArray(playlist.sharedWith)) {
       playlist.sharedWith = [];
@@ -484,16 +508,17 @@ export const addUsersToSharedPlaylist = async (req, res) => {
 
     // Add users (avoid duplicates using Set)
     const currentSharedSet = new Set(playlist.sharedWith.map(id => id.toString()));
-    usersToAdd.forEach(userId => currentSharedSet.add(userId));
+    currentSharedSet.add(userToAdd);
 
     playlist.sharedWith = Array.from(currentSharedSet);
 
     await playlist.save();
-
+    const playlists = await Playlist.find({})
     return res.status(200).json({
       success: true,
       message: 'Users added to shared playlist successfully',
       sharedWith: playlist.sharedWith,
+      playlists
     });
 
   } catch (error) {
@@ -504,3 +529,35 @@ export const addUsersToSharedPlaylist = async (req, res) => {
     });
   }
 };
+
+export const allPlaylist = async (req, res) => {
+  try {
+    const playlists = await Playlist.find({}).lean()
+    if (!playlists) {
+      return res.status(400).json({
+        success: false,
+        message: 'No playlist found'
+      })
+    }
+     const playlistsWithMovies = await Promise.all(
+      playlists.map(async (playlist) => {
+        const movieDocs = await Movies.find({ tmdbId: { $in: playlist.movies } });
+        return {
+          ...playlist,
+          movies: movieDocs,
+        };
+      })
+    );
+    return res.status(200).json({
+      success: true,
+      message: 'All playlist retrieved',
+      playlists:playlistsWithMovies
+    })
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+}

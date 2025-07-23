@@ -18,6 +18,7 @@ const Card = ({
         bg-[#1A1A1A] shadow-lg
         w-full max-w-md
         p-5 rounded-xl
+        w-full
         border border-[#262626]
         transition-all duration-200
         ${onClick ? 'cursor-pointer hover:border-[#E50000]' : ''}

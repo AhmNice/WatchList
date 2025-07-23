@@ -11,9 +11,13 @@ import { useMovieStore } from "../store/movieStore";
 import { usePlaylistStore } from "../store/playlistStore";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
+import { useFavStore } from "../store/favoriteStore";
 
 const Dashboard = () => {
   const navigate = useNavigate()
+ const { playlists, fetchUserPlaylists, loadingPlaylist } = usePlaylistStore()
+  const { favorite } = useFavStore()
+
    const stats = [
   {
     title: "Movies Watched",
@@ -22,12 +26,12 @@ const Dashboard = () => {
   },
   {
     title: "Favorites",
-    value: 24,
+    value: favorite?.length || 0,
     icon: <Heart className="text-[#E50000]" size={28} />,
   },
   {
     title: "Playlists",
-    value: 5,
+    value: playlists?.length || 0,
     icon: <ListVideo className="text-[#00C49F]" size={28} />,
   },
   {
@@ -36,22 +40,22 @@ const Dashboard = () => {
     icon: <Clock className="text-[#FFB400]" size={28} />,
   },
 ];
-const { playlists, fetchAllPlaylist, loadingPlaylist } = usePlaylistStore()
 const {user} = useAuthStore()
 const { getAllMovie, movies, loading, success, errorMsg } = useMovieStore();
 useEffect(()=>{
   document.title = "Dashboard - WatchList";
-    if(movies && movies.length > 0){
-      return
-    }else{
-      getAllMovie()
-    }
-    if(playlists && playlists.length > 0){
-      return
-    }else{
-      fetchAllPlaylist()
-    }
-  },[])
+      if(movies && movies.length > 0){
+        return
+      }else{
+        getAllMovie()
+      }
+      if(playlists && playlists.length > 0){
+        return
+      }else{
+      fetchUserPlaylists()
+
+      }
+    },[])
 console.log(movies)
 
   return (

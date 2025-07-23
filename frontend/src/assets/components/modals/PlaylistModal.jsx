@@ -17,7 +17,7 @@ const PlaylistModal = ({ onClose }) => {
   const modalRef = useRef(null)
   const { user } = useAuthStore()
   const { movies, getAllMovie } = useMovieStore()
-  const { createPlaylist, fetchAllPlaylist, loadingPlaylist } = usePlaylistStore()
+  const { createPlaylist, fetchUserPlaylists, loadingPlaylist } = usePlaylistStore()
 
   useEffect(() => {
     if (movies && movies.length > 0) {

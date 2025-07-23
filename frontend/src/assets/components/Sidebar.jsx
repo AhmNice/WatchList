@@ -9,13 +9,14 @@ import {
   Bell,
   Settings,
   LogOut,
-  Sparkles
+  Sparkles,
+  User
 } from 'lucide-react';
 import { NavLink, replace, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import useScreen from '../hooks/useScreen';
 import { useEffect } from 'react';
-
+import { toast } from 'react-hot-toast'
 const Sidebar = () => {
   const navigate = useNavigate();
   const { logout, authenticated, checkingAuth, checkAuth } = useAuthStore();
@@ -34,6 +35,7 @@ const Sidebar = () => {
 
   const userSidebarLinks = [
     { label: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
+    { label: "Users", icon: <User size={20} />, path: "/users" },
     { label: "My Playlists", icon: <ListVideo size={20} />, path: "/playlists" },
     { label: "Recommendation", icon: <Sparkles size={20} />, path: "/recommendations" },
     { label: "Favorites", icon: <Heart size={20} />, path: "/favorites" },
@@ -49,7 +51,7 @@ const Sidebar = () => {
     isMovie ? 'w-16' : 'w-full max-w-64'
   }`}>
     {/* Navigation Links */}
-    <div className="flex-1 flex flex-col space-y-2 overflow-y-auto">
+    <div className="flex-1 flex flex-col scrollbar-none space-y-2 overflow-y-auto">
       {userSidebarLinks.slice(0, -1).map((link) => (
         <NavLink
           key={link.path}
@@ -73,7 +75,8 @@ const Sidebar = () => {
     <div className="mt-auto pt-4 border-t border-[#262626]">
       {!isMovie ? (
         <>
-          <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#262626] transition-colors mb-2">
+          <NavLink to={'/profile'}
+           className="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#262626] transition-colors mb-2">
             <div className="w-10 h-10 rounded-full bg-[#E50000] flex items-center justify-center text-white Manrope-SemiBold">
               <span className="text-sm font-medium">W</span>
             </div>
@@ -81,7 +84,7 @@ const Sidebar = () => {
               <p className="text-white Manrope-SemiBold font-medium truncate">{user?.username||'Username'}</p>
               <p className="text-gray-400 Manrope-Regular text-xs truncate">{user?.email||'user@example.com'}</p>
             </div>
-          </div>
+          </NavLink>
           <button onClick={()=> handleLogout()} className="flex w-full cursor-pointer items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-[#262626]">
             <LogOut size={20} />
             <span className="font-medium">Logout</span>

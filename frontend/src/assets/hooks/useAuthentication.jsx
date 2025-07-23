@@ -10,23 +10,29 @@ const AuthWrapper = ({ children }) => {
   // ✅ Only check once on mount
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []);
 
   // ✅ Redirect when auth check completes and user is not authenticated
-  useEffect(() => {
-    if (!checkingAuth && !authenticated) {
-      navigate('/login', { replace: true });
-    }
-  }, [checkingAuth, authenticated, navigate]);
+ useEffect(() => {
+  if (!checkingAuth && authenticated && window.location.pathname === '/login') {
+    navigate('/dashboard', { replace: true }); // or your dashboard route
+  }
+  if (!checkingAuth && !authenticated && window.location.pathname !== '/login') {
+    navigate('/login', { replace: true });
+  }
+}, [checkingAuth, authenticated, navigate]);
 
   // ✅ Show loading screen while checking auth
-  if (checkingAuth) {
+  const isReady = !checkingAuth;
+  // console.log(checkingAuth)
+  if (!isReady) {
     return (
       <div className='flex items-center justify-center bg-[#141414] min-h-screen'>
         <Loader2 size={24} className='text-[#E50000] animate-spin' />
       </div>
     );
   }
+
 
   return children;
 };

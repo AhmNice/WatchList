@@ -2,13 +2,14 @@ import express, { Router } from 'express'
 import { changePassword, checkAuth, createUser, deactivateAccount, deactivationRequest, deleteAccountRequest, deleteUserAccount, forgetPasswordRequest, resendOTP, userLogin, userLogout, userPasswordChanged, userPasswordChangeRequest, verifyOTP } from '../controller/auth.controller.js'
 import { otpResendLimiter } from '../middleware/otpResendLimiter.js'
 import { verifySession } from '../utils/verifySession.js'
-import { createEmptyPlaylist, createPlaylist, createSharedPlaylist, deletePlaylist, getPlaylistById, getUserPlaylists, removeMovieFromPlaylist, updatePlaylist } from '../controller/playlist.controller.js'
+import { addUserToSharedPlaylist, allPlaylist, createEmptyPlaylist, createPlaylist, createSharedPlaylist, deletePlaylist, getPlaylistById, getUserPlaylists, removeMovieFromPlaylist, updatePlaylist } from '../controller/playlist.controller.js'
 import { verifyOwnership } from '../utils/verifyOwnership.js'
 import { getAllMovies, getMovieById, multi_search, searchMovie, trendingMovie } from '../controller/movie.controller.js'
 import { addReview, getMovieReviews } from '../controller/review.controller.js'
 import { addMovieToFavorite, getFavoriteMovies, removeFromFavorite } from '../controller/favorite.controller.js'
 import { logInteraction } from '../middleware/logInteraction.js'
 import { recommendationSystem } from '../controller/recommendation.controller.js'
+import { followUser, getUsers, unFollowUser } from '../controller/getUsers.controller.js'
 
 //  authentications route
 export const authRoute = express.Router()
@@ -28,6 +29,7 @@ authRoute.post('/account/forget-password', forgetPasswordRequest)
 authRoute.post('/account/password-reset', changePassword)
 // playlist routes
 export const playlistRoute = express.Router()
+playlistRoute.get('/all-playlist', allPlaylist)
 playlistRoute.post('/create-playlist', verifySession, createPlaylist)
 playlistRoute.post('/create-shared-playlist', verifySession, createSharedPlaylist)
 playlistRoute.post('/create-empty-playlist', verifySession, createEmptyPlaylist)
@@ -36,6 +38,7 @@ playlistRoute.get('/get-userPlaylist/:userId',getUserPlaylists)
 playlistRoute.patch('/update-playlist/:playlistId/:userId', verifySession, verifyOwnership,logInteraction('playlist'), updatePlaylist)
 playlistRoute.delete('/delete-playlist/:playlistId/:userId', verifySession, verifyOwnership, deletePlaylist)
 playlistRoute.delete('/remove-movie/:playlistId/:userId/:movieId', verifySession,verifyOwnership, removeMovieFromPlaylist)
+playlistRoute.post('/add-user/:playlistShareCode', verifySession, addUserToSharedPlaylist)
 
 // movie route
 export const movieRoute = express.Router()
@@ -55,3 +58,9 @@ favoriteRoute.delete('/remove-movie/:movieId/:userId',verifySession,removeFromFa
 
 export const recommendationRoute = express.Router()
 recommendationRoute.post('/recommend/:userId',verifySession, recommendationSystem)
+
+
+export const userRoute = express.Router();
+userRoute.get('/users', getUsers)
+userRoute.post('/follow/:userId/:targetUserId',verifySession, followUser)
+userRoute.post('/unfollow/:userId/:targetUserId',verifySession, unFollowUser)

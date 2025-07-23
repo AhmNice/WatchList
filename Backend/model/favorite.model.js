@@ -8,6 +8,7 @@ const favoriteSchema = new mongoose.Schema({
   movies: {
     type: [String]
   },
+ 
 }, {
   timestamps: true
 });

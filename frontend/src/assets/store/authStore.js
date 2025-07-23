@@ -5,6 +5,7 @@ import { usePlaylistStore } from './playlistStore';
 import { useMovieStore } from './movieStore';
 import { useFavStore } from './favoriteStore';
 import { useRecommendationStore } from './recommendationStore';
+import { useUserStore } from './userStore';
 axios.defaults.withCredentials = true;
 
 const initialStates = {
@@ -12,8 +13,9 @@ const initialStates = {
   user: null,
   loading: false,
   errorMsg: null,
-  checkingAuth: true,
-  authenticated: false
+  checkingAuth: false,
+  authenticated: null,
+  lastAuthCheck: null
 };
 
 const serverURL_AUTH = import.meta.env.VITE_AUTH_SERVER_URL;
@@ -23,6 +25,12 @@ export const useAuthStore = create(
   persist(
     (set, get) => ({
       ...initialStates,
+
+      updateUser: (newUserData) => {
+        set((state) => ({
+          user: { ...state.user, ...newUserData }
+        }));
+      },
 
       login: async ({ email, password }) => {
         set({
@@ -40,7 +48,8 @@ export const useAuthStore = create(
             errorMsg: null,
             authenticated: true,
             success: true,
-            checkingAuth: false
+            checkingAuth: false,
+            lastAuthCheck: Date.now()
           });
           return data;
         } catch (error) {
@@ -121,69 +130,69 @@ export const useAuthStore = create(
           throw error;
         }
       },
-      changePasswordInAccount:async(payload)=>{
-        set({loading: true, success:false, errorMsg:null})
+      changePasswordInAccount: async (payload) => {
+        set({ loading: true, success: false, errorMsg: null })
         try {
-          const { data }= await axios.post(`${serverURL_AUTH}/account/change-password`, payload);
+          const { data } = await axios.post(`${serverURL_AUTH}/account/change-password`, payload);
           set({
-            loading:false,
-            success:true,
-            errorMsg:null,
-            user:data.user
+            loading: false,
+            success: true,
+            errorMsg: null,
+            user: data.user
           })
         } catch (error) {
           console.log(error.message)
           set({
-            success:false,
-            errorMsg:error.response?.data?.message,
-            loading:false
+            success: false,
+            errorMsg: error.response?.data?.message,
+            loading: false
           })
         }
       },
-      changePasswordOutside : async(payload)=>{
+      changePasswordOutside: async (payload) => {
         set({
-          loading:true,
-          success:false,
-          errorMsg:null
+          loading: true,
+          success: false,
+          errorMsg: null
         })
         try {
-          const { data } = await axios.post(`${serverURL_AUTH}/account/password-reset`,payload)
+          const { data } = await axios.post(`${serverURL_AUTH}/account/password-reset`, payload)
           set({
-            success:true,
-            errorMsg:null,
-            loading:false,
-            user:data.user
+            success: true,
+            errorMsg: null,
+            loading: false,
+            user: data.user
           })
         } catch (error) {
           console.log(error.message)
           set({
-            success:false,
-            errorMsg:error?.response?.data?.message,
-            loading:false
+            success: false,
+            errorMsg: error?.response?.data?.message,
+            loading: false
           })
         }
       },
       checkAuth: async (force = false) => {
-        set({ checkingAuth: true, loading: true, errorMsg: null });
-
-        const authenticated = get().authenticated;
-        if (authenticated && !force) {
-          set({ checkingAuth: false, loading: false });
+        const { checkingAuth, authenticated, lastAuthCheck } = get();
+        const now = Date.now();
+        const sevenDays = 2 * 24 * 60 * 60 * 1000;
+        console.log(checkingAuth);
+        if (!force && authenticated && lastAuthCheck && now - lastAuthCheck < sevenDays) {
+          set({ checkingAuth: false });
           return;
         }
-
+        set({ checkingAuth: true, errorMsg: null });
         try {
           const { data } = await axios.get(`${serverURL_ACC}/check-auth`);
           set({
-            checkingAuth: false,
-            loading: false,
-            errorMsg: null,
             authenticated: true,
-            user: data.user
+            user: data.user,
+            lastAuthCheck: now
           });
         } catch (error) {
-          console.error('Error checking authentication:', error);
-          set({ checkingAuth: false, loading: false, authenticated: false });
+          set({ authenticated: false, errorMsg: error?.response?.data?.message || error.message });
+        } finally {
+          set({ checkingAuth: false });
         }
       },
 
@@ -199,10 +208,12 @@ export const useAuthStore = create(
           await useFavStore.persist.clearStorage();
           await useRecommendationStore.persist.clearStorage();
           // Reset Zustand in-memory state
-          set({ ...initialStates, checkingAuth: false });
+          set({ ...initialStates, checkingAuth: null });
           usePlaylistStore.getState().resetPlaylist();
           useMovieStore.getState().resetMovieStore();
-
+          useFavStore.getState().resetState();
+          useRecommendationStore.getState().resetState()
+          useUserStore.getState().reset();
         } catch (error) {
           console.error('Logout error:', error);
           set({
@@ -210,6 +221,8 @@ export const useAuthStore = create(
             errorMsg: error?.response?.data?.message || 'Internal server error',
             success: false
           });
+        } finally {
+          set({ checkingAuth: false, loading: false });
         }
       }
       ,
@@ -220,7 +233,8 @@ export const useAuthStore = create(
       name: 'auth-store',
       partialize: (state) => ({
         authenticated: state.authenticated,
-        user: state.user
+        user: state.user,
+        lastAuthCheck: state.lastAuthCheck
       }),
     }
   )

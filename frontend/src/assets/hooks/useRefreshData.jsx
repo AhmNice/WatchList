@@ -4,7 +4,7 @@ import { usePlaylistStore } from '../store/playlistStore';
 import { useAuthStore } from '../store/authStore'
 const useAutoRefreshData = () => {
   const { getAllMovie } = useMovieStore();
-  const { fetchAllPlaylist } = usePlaylistStore();
+  const { fetchUserPlaylists } = usePlaylistStore();
   const { user } = useAuthStore()
 
   const refreshInterval = 10 * 60 * 1000; // 10 minutes
@@ -12,12 +12,12 @@ const useAutoRefreshData = () => {
   useEffect(() => {
     // Initial fetch on mount
     getAllMovie(true);
-    fetchAllPlaylist(user?._id, true);
+    fetchUserPlaylists(user?._id, true);
 
     const interval = setInterval(() => {
       try {
         getAllMovie();
-        fetchAllPlaylist();
+        fetchUserPlaylists();
       } catch (error) {
         console.error('Auto-refresh error:', error.message);
       }
@@ -25,7 +25,7 @@ const useAutoRefreshData = () => {
 
     // ✅ Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [getAllMovie, fetchAllPlaylist]);
+  }, [getAllMovie, fetchUserPlaylists]);
 };
 
 export default useAutoRefreshData;

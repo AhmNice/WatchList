@@ -212,3 +212,6 @@ export const getMovieByGenre = async (req, res) => {
 
   }
 }
+export const getUserMovie = async(req,res)=>{
+
+}

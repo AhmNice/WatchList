@@ -24,6 +24,9 @@ import Settings from './assets/Pages/Settings'
 import FavoritePage from './assets/Pages/FAvoritePage'
 import RecommendationPage from './assets/Pages/RecommendationPage'
 import VerifyReminder from './assets/components/modals/VerifyReminder'
+import UsersPage from './assets/Pages/UsersPage'
+import ProfilePage from './assets/Pages/ProfilePage'
+import SharedPlaylistPage from './assets/Pages/SharedPlaylistPage'
 
 function App() {
   const { user } = useAuthStore()
@@ -56,16 +59,16 @@ function App() {
         <Route path={'*'} element={<NotFound />} />
         <Route path={'/home'} element={<HomePage />} />
         <Route path='/login' element={
-          <AuthRedirect>
+          <AuthWrapper>
             <LoginPage />
-          </AuthRedirect>
+          </AuthWrapper>
         } />
         <Route path='/forget-password' element={<ForgetPasswordPage />} />
         <Route path='/password/reset-request/:token' element={<PasswordRestPage />} />
         <Route path='/signup' element={
-          <AuthRedirect>
+          <AuthWrapper>
             <SignupPage />
-          </AuthRedirect>
+          </AuthWrapper>
         } />
         <Route path='/otp' element={<OtpPage />} />
         <Route path='/movies' element={<MoviesPage />} />
@@ -95,6 +98,16 @@ function App() {
             <PlaylistPage />
           </AuthWrapper>
         } />
+        <Route path='/users' element={
+          <AuthWrapper>
+            <UsersPage />
+          </AuthWrapper>
+        } />
+        <Route path='/profile' element={
+          <AuthWrapper>
+            <ProfilePage />
+          </AuthWrapper>
+        } />
         <Route path='/discover' element={
           <AuthWrapper>
             <DiscoverPage />
@@ -103,6 +116,11 @@ function App() {
         <Route path='discover/movie/:movieId' element={
           <AuthWrapper>
             <MovieDetailsPage />
+          </AuthWrapper>
+        } />
+        <Route path='/shared' element={
+          <AuthWrapper>
+            <SharedPlaylistPage />
           </AuthWrapper>
         } />
         <Route path='/movies/:movieId' element={

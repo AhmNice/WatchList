@@ -9,7 +9,7 @@ const PlaylistDetailsModal = ({ playlist, onClose, handlePick }) => {
   useEffect(() => {
     if (playlist?.movies) setLocalMovies(playlist.movies);
   }, [playlist.movies]);
-
+  console.log(playlist)
   return (
     <motion.div
       initial={{ opacity: 0 }}

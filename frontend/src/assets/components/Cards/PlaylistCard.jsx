@@ -79,11 +79,11 @@ const PlaylistCard = ({
       {/* Playlist Image */}
       <div className="relative aspect-video overflow-hidden">
         <img
-          src={playlist.imageUrl}
-          alt={playlist.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          src={'/default-playlist.png'}
+          alt={playlist?.title}
+          className="w-full h-full rounded-t object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => {
-            e.target.src = '/default-playlist.jpg';
+            e.target.src = '/default-playlist.png';
           }}
         />
 
@@ -119,16 +119,16 @@ const PlaylistCard = ({
           <div className="flex-1 min-w-0">
             <h3
               className="text-white Manrope-Bold text-lg truncate"
-              title={playlist.title}
+              title={playlist?.title}
             >
-              {playlist.title}
+              {playlist?.title}
             </h3>
-            {playlist.description && (
+            {playlist?.description && (
               <p
                 className="text-gray-400 Manrope-Regular text-sm mt-1 line-clamp-2"
-                title={playlist.description}
+                title={playlist?.description}
               >
-                {playlist.description}
+                {playlist?.description}
               </p>
             )}
           </div>
@@ -183,7 +183,7 @@ const PlaylistCard = ({
         {/* Metadata */}
         <div className="flex items-center justify-between mt-4 text-xs text-gray-500">
           <div className="flex items-center space-x-1">
-            <span>{playlist.movies?.length || 0} movies</span>
+            <span>{playlist?.movies?.length || 0} movies</span>
           </div>
           {playlist.duration && (
             <div className="flex items-center space-x-1">
