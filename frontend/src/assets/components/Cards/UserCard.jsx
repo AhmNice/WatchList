@@ -33,11 +33,7 @@ const UserCard = ({ user: cardUser, currentUserId, isFollowing, onFollowUpdate }
     }
   };
 
-  useEffect(() => {
-    if (errorMsg) {
-      toast.error(errorMsg);
-    }
-  }, [errorMsg]);
+
 
   useEffect(() => {
     setFollowStatus(isFollowing);

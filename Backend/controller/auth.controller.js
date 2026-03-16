@@ -134,7 +134,9 @@ export const userLogin = async (req, res) => {
   }
 
   try {
+    console.log("Login attempt for email:", email);
     const user = await User.findOne({ email });
+    console.table(user)
     if (!user) {
       return res.status(404).json({ success: false, message: 'No user found' });
     }
@@ -213,11 +215,13 @@ export const userPasswordChangeRequest = async (req, res) => {
     await user.save();
 
     const resetLink = `${process.env.CLIENT_URL}/password/reset-request/${token}`;
-   const expirationTime = '15 minutes'
-    await sendPasswordResetEmail(user.username, user.email, resetLink,expirationTime);
+    console.log(resetLink)
+    const expirationTime = '15 minutes'
+    await sendPasswordResetEmail(user.username, user.email, resetLink, expirationTime);
 
     return res.status(200).json({
       success: true,
+      resetLink: resetLink,
       message: 'Password reset link has been sent to your email'
     });
 
@@ -291,7 +295,7 @@ export const userPasswordChanged = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Password changed successfully',
-      user:user
+      user: user
     });
 
   } catch (error) {
@@ -539,6 +543,7 @@ export const forgetPasswordRequest = async (req, res) => {
     await sendPasswordResetEmail(user.username, user.email, resetLink);
     return res.status(200).json({
       success: true,
+      resetLink: resetLink,
       message: 'Password reset link has been sent to your email'
     });
   } catch (error) {
@@ -551,7 +556,8 @@ export const forgetPasswordRequest = async (req, res) => {
 }
 export const changePassword = async (req, res) => {
   const { token, newPassword } = req.body;
-  if ( !token || !newPassword) {
+  console.log("Received change password request with token:", token);
+  if (!token || !newPassword) {
     return res.status(400).json({
       success: false,
       message: 'Email, token, and new password are required'
@@ -577,12 +583,12 @@ export const changePassword = async (req, res) => {
     user.password = hashedPassword;
     user.resetPasswordToken = null;
     user.resetPasswordTokenExpiresAt = null;
-    user.passwordLastChanged= Date.now()
+    user.passwordLastChanged = Date.now()
     await user.save();
     res.status(200).json({
-      success:true,
-      message:'password updated',
-      user:user
+      success: true,
+      message: 'password updated',
+      user: user
     })
   } catch (error) {
     console.error('Error changing password:', error);
@@ -622,7 +628,7 @@ export const updateAccount = async (req, res) => {
 
     // Only update fields if provided
     if (typeof bio === 'string') user.bio = bio;
-    if (typeof email === 'string'){
+    if (typeof email === 'string') {
       user.email = email;
       user.isVerified = false
     }

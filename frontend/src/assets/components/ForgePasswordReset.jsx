@@ -1,27 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2, Lock } from 'lucide-react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Loader2, Lock } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 const ForgePasswordReset = () => {
   const [formData, setFormData] = useState({
-    password: '',
-    confirmPassword: ''
+    password: "",
+    confirmPassword: "",
   });
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [location, setLocation] = useState('');
-  const { changePasswordInAccount,changePasswordOutside, user, success, errorMsg, loading} = useAuthStore()
+  const [location, setLocation] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    changePasswordInAccount,
+    changePasswordOutside,
+    user,
+    success,
+    errorMsg,
+    loading,
+  } = useAuthStore();
 
   const navigate = useNavigate();
   const { token } = useParams();
 
   useEffect(() => {
     if (success) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [success, navigate]);
 
@@ -31,13 +40,13 @@ const ForgePasswordReset = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -50,34 +59,45 @@ const ForgePasswordReset = () => {
 
   const getLocation = async () => {
     try {
-      const response = await axios.get('https://ipapi.co/json/');
+      const response = await axios.get("https://ipapi.co/json/");
       const { city, region, country_name } = response.data;
       setLocation(`${city}, ${region}, ${country_name}`);
     } catch (err) {
-      console.error('Failed to fetch location');
-      setLocation('Unknown location');
+      console.error("Failed to fetch location");
+      setLocation("Unknown location");
     }
   };
 
   const submit = async () => {
+    console.log("Submitting password reset with data:", token);
     const payload = {
       userId: user?._id,
       token: token,
       deviceType: getDeviceType(),
       location: location,
-      password: formData.password
+      newPassword: formData.password,
     };
-    setIsSubmitting(true)
+    setIsSubmitting(true);
+    let response;
     try {
-      if(user?._id){
-        await changePasswordInAccount(payload)
-      }else{
-        changePasswordOutside(payload)
+      if (user?._id) {
+        response = await changePasswordInAccount(payload);
+      } else {
+        response = await changePasswordOutside(payload);
       }
-      toast.success(`password reset successfully, redirecting...`);
+      if (response?.success) {
+        toast.success("Password reset successful! Redirecting...");
+        setTimeout(() => {
+          if (user?._id) {
+            navigate("/dashboard");
+          } else {
+            navigate("/login");
+          }
+        }, 2000);
+      }
     } catch (error) {
-      console.error('Password reset error:', error);
-      toast.error(error?.response?.data?.message || 'Failed to reset password');
+      console.error("Password reset error:", error);
+
     }
   };
 
@@ -86,15 +106,15 @@ const ForgePasswordReset = () => {
     const newErrors = {};
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
@@ -120,10 +140,10 @@ const ForgePasswordReset = () => {
           transition={{ type: "spring", stiffness: 200 }}
           alt="Logo"
         />
-        <h2 className='Manrope-SemiBold text-2xl text-[#F1F1F3] mt-4'>
+        <h2 className="Manrope-SemiBold text-2xl text-[#F1F1F3] mt-4">
           Password Reset
         </h2>
-        <p className='Manrope-Regular text-sm text-[#A0A0A0] mt-2 text-center'>
+        <p className="Manrope-Regular text-sm text-[#A0A0A0] mt-2 text-center">
           Enter new password to reset your account password
         </p>
       </div>
@@ -190,7 +210,9 @@ const ForgePasswordReset = () => {
               />
             </div>
             {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
+              <p className="mt-1 text-sm text-red-500">
+                {errors.confirmPassword}
+              </p>
             )}
           </motion.div>
 
@@ -202,13 +224,17 @@ const ForgePasswordReset = () => {
           >
             <button
               type="submit"
-              disabled={  isLoading }
+              disabled={isLoading}
               className="w-full flex cursor-pointer items-center justify-center disabled:cursor-not-allowed Manrope-SemiBold disabled:bg-[#E50000]/50 disabled:text-white/50 bg-[#E50000] text-white py-3 px-4 rounded-lg hover:bg-[#FF1919] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E50000] focus:ring-offset-2 focus:ring-offset-[#1A1A1A]"
             >
-              {isLoading ? (<>
-              <Loader2 size={14} className='text-white animate-spin'/>
-                <span>'Resetting Password...'</span>
-              </>) : 'Reset Password'}
+              {isLoading ? (
+                <>
+                  <Loader2 size={14} className="text-white animate-spin" />
+                  <span>'Resetting Password...'</span>
+                </>
+              ) : (
+                "Reset Password"
+              )}
             </button>
           </motion.div>
         </div>

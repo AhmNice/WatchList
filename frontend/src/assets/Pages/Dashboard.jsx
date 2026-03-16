@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+// import Header from "../components/Header";
 import Card from "../components/Cards/StatCard";
 import WelcomeCard from "../components/Cards/WelcomeCard";
 import { Film, Heart, ListVideo, Clock, Loader2 } from "lucide-react";
@@ -14,49 +14,48 @@ import { useNavigate } from "react-router-dom";
 import { useFavStore } from "../store/favoriteStore";
 
 const Dashboard = () => {
-  const navigate = useNavigate()
- const { playlists, fetchUserPlaylists, loadingPlaylist } = usePlaylistStore()
-  const { favorite } = useFavStore()
+  const navigate = useNavigate();
+  const { playlists, fetchUserPlaylists, loadingPlaylist } = usePlaylistStore();
+  const { favorite } = useFavStore();
 
-   const stats = [
-  {
-    title: "Movies Watched",
-    value: 128,
-    icon: <Film className="text-[#FF4C4C]" size={28} />,
-  },
-  {
-    title: "Favorites",
-    value: favorite?.length || 0,
-    icon: <Heart className="text-[#E50000]" size={28} />,
-  },
-  {
-    title: "Playlists",
-    value: playlists?.length || 0,
-    icon: <ListVideo className="text-[#00C49F]" size={28} />,
-  },
-  {
-    title: "Watch Time",
-    value: "36h",
-    icon: <Clock className="text-[#FFB400]" size={28} />,
-  },
-];
-const {user} = useAuthStore()
-const { getAllMovie, movies, loading, success, errorMsg } = useMovieStore();
-useEffect(()=>{
-  document.title = "Dashboard - WatchList";
-      if(movies && movies.length > 0){
-        return
-      }else{
-        getAllMovie()
-      }
-      if(playlists && playlists.length > 0){
-        return
-      }else{
-      fetchUserPlaylists()
-
-      }
-    },[])
-console.log(movies)
+  const stats = [
+    {
+      title: "Movies Watched",
+      value: 128,
+      icon: <Film className="text-[#FF4C4C]" size={28} />,
+    },
+    {
+      title: "Favorites",
+      value: favorite?.length || 0,
+      icon: <Heart className="text-[#E50000]" size={28} />,
+    },
+    {
+      title: "Playlists",
+      value: playlists?.length || 0,
+      icon: <ListVideo className="text-[#00C49F]" size={28} />,
+    },
+    {
+      title: "Watch Time",
+      value: "36h",
+      icon: <Clock className="text-[#FFB400]" size={28} />,
+    },
+  ];
+  const { user } = useAuthStore();
+  const { getAllMovie, movies, loading, success, errorMsg } = useMovieStore();
+  useEffect(() => {
+    document.title = "Dashboard - WatchList";
+    if (movies && movies.length > 0) {
+      return;
+    } else {
+      getAllMovie();
+    }
+    if (playlists && playlists.length > 0) {
+      return;
+    } else {
+      fetchUserPlaylists();
+    }
+  }, []);
+  console.log(movies);
 
   return (
     <section className="flex h-screen bg-[#141414] overflow-hidden">
@@ -65,9 +64,9 @@ console.log(movies)
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="h-16 flex-shrink-0">
+        {/* <div className="h-16 flex-shrink-0">
           <Header />
-        </div>
+        </div> */}
 
         {/* Scrollable Content - flex-1 to take remaining space */}
         <div className="flex-1 w-full scrollbar-none overflow-y-auto p-6">
@@ -87,34 +86,33 @@ console.log(movies)
 
           {/* Latest from playlist - responsive columns */}
 
-
-            <div className="mt-8">
-            <h2 className="Manrope-SemiBold text-lg text-white">Latest From Your Playlist</h2>
-            {playlists && playlists.length> 0 && (
-               <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-4">
-              {playlists?.slice(0,4).map((playlist) => (
-                <UpdateCard
-                  key={playlist.id}
-                  playlist={playlist}
-                />
-              ))}
+          <div className="mt-8">
+            <h2 className="Manrope-SemiBold text-lg text-white">
+              Latest From Your Playlist
+            </h2>
+            {playlists && playlists.length > 0 && (
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-4">
+                {playlists?.slice(0, 4).map((playlist) => (
+                  <UpdateCard key={playlist.id} playlist={playlist} />
+                ))}
               </div>
             )}
             {loadingPlaylist && (
               <div className="col-span-4 flex justify-center py-8">
-                <Loader2 className="animate-spin text-[#E50000]" size={32}/>
+                <Loader2 className="animate-spin text-[#E50000]" size={32} />
               </div>
             )}
           </div>
 
-
           {/* Recommendations - responsive columns */}
           <div className="mt-8">
-            <h2 className="Manrope-SemiBold text-lg text-white">Recommendations</h2>
+            <h2 className="Manrope-SemiBold text-lg text-white">
+              Recommendations
+            </h2>
             <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-4">
               {loading ? (
                 <div className="col-span-4 flex justify-center py-8">
-                  <Loader2 className="animate-spin text-[#E50000]" size={32}/>
+                  <Loader2 className="animate-spin text-[#E50000]" size={32} />
                 </div>
               ) : (
                 movies?.slice(0, 4).map((movie) => (
@@ -122,8 +120,8 @@ console.log(movies)
                     key={movie.id}
                     movie={movie}
                     showRating={true}
-                    onClick={()=>{
-                      navigate(`/discover/movie/${movie.tmdbId}`)
+                    onClick={() => {
+                      navigate(`/discover/movie/${movie.tmdbId}`);
                     }}
                   />
                 ))

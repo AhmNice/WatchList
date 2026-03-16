@@ -16,12 +16,12 @@ import toast from "react-hot-toast";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { signup, success,errorMsg, loading } = useAuthStore();
-  const navigate = useNavigate()
+  const { signup, success, errorMsg, loading } = useAuthStore();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     username: "",
-    phoneNumber: "", // Added missing field
+    phoneNumber: "", 
     password: "",
   });
   const [errors, setErrors] = useState({
@@ -36,10 +36,10 @@ const Signup = () => {
       ...prev,
       [id]: value,
     }));
-    setErrors((prev)=>({
+    setErrors((prev) => ({
       ...prev,
-      [id]:null
-    }))
+      [id]: null,
+    }));
   };
   const validateForm = () => {
     const newErrors = {
@@ -48,49 +48,56 @@ const Signup = () => {
       phoneNumber: null,
       password: null,
     };
-    let isValid = true
-    const regex = /^(?=(?:[^A-Za-z]*[A-Za-z]){4,})(?=(?:[^0-9]*[0-9]){2,})(?=(?:[^!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?`~]*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?`~]){1,}).{7,}$/;
-    if(!formData.email){
-      newErrors.email ='Email is required'
-      isValid=false
-    }else if( !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)){
-      newErrors.email='Invalid email format'
-      isValid=false
+    let isValid = true;
+    const regex =
+      /^(?=(?:[^A-Za-z]*[A-Za-z]){4,})(?=(?:[^0-9]*[0-9]){2,})(?=(?:[^!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?`~]*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?`~]){1,}).{7,}$/;
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+      isValid = false;
     }
-    if(!formData.password){
-      newErrors.password='Password is Required'
-      isValid=false
-    }else if(!regex.test(formData.password)){
-      newErrors.password='password should contain at least 4 letters, 2 number and a symbol'
-      isValid=false
+    if (!formData.password) {
+      newErrors.password = "Password is Required";
+      isValid = false;
+    } else if (!regex.test(formData.password)) {
+      newErrors.password =
+        "password should contain at least 4 letters, 2 number and a symbol";
+      isValid = false;
     }
     if (!formData.phoneNumber) {
       newErrors.phoneNumber = "Phone number is required";
       isValid = false;
-    }if (!formData.username) {
+    }
+    if (!formData.username) {
       newErrors.username = "username is required";
       isValid = false;
     }
-    setErrors(newErrors)
-    return isValid
+    setErrors(newErrors);
+    return isValid;
   };
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!validateForm()){
+    if (!validateForm()) {
       return;
     }
-    await signup(formData)
+    try {
+      const response = await signup(formData);
+      if (response.success) {
+        toast.success("Account created successfully! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/otp");
+        }, 2000);
+      } else {
+        toast.error(errorMsg || "Failed to create account");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error(error?.response?.data?.message || "Failed to create account");
+    }
   };
-  useEffect(()=>{
-    if(success){
-      navigate('/otp')
-    }
-  },[success])
-  useEffect(()=>{
-    if(errorMsg){
-      toast.error(errorMsg)
-    }
-  },[errorMsg])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

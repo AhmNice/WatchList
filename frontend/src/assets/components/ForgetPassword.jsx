@@ -24,11 +24,11 @@ const ForgetPassword = () => {
       console.log('Form submitted with email:', email);
       setErrors({});
       try {
-          await forgetPassword(email);
-          if (success) {
+        const response =  await forgetPassword(email);
+          if (response.success) {
             toast.success('Password reset link sent to your email');
           } else {
-            toast.error(errorMsg || 'Failed to send reset link');
+           console.log(response.errorMsg || 'Failed to send reset link');
           }
       } catch (error) {
         console.error('Error submitting form:', error);

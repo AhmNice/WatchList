@@ -1,64 +1,21 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  bio:{
-    type:String
-  },
-  profilePath:{
-    type:String
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  playList: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Playlist',
-  }],
-  following: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  followers: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  movieWatched:[{
-    type:String,
-    ref:'Movies'
-  }],
-  favorites:[{
-    type:String,
-    ref:'Movies'
-  }],
-  lastLogin: {
-    type: Date,
-    default: Date.now,
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-  isActive:{
-    type:Boolean,
-    default:true
-  },
-  passwordLastChanged:Date,
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  bio: { type: String },
+  profilePath: { type: String },
+  phoneNumber: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  playList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Playlist' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  movieWatched: [{ type: String, ref: 'Movies' }],
+  favorites: [{ type: String, ref: 'Movies' }],
+  lastLogin: { type: Date, default: Date.now },
+  isVerified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+  passwordLastChanged: Date,
   resetPasswordToken: String,
   resetPasswordTokenExpiresAt: Date,
   verificationToken: String,
@@ -66,8 +23,11 @@ const userSchema = mongoose.Schema({
   deactivationToken: String,
   deactivationTokenExpiresAt: Date,
   deactivationDate: Date,
-  deleteAccountToken:String,
+  deleteAccountToken: String,
   deleteAccountTokenExpiresAt: Date
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  collection: 'users'
+});
 
 export const User = mongoose.model('User', userSchema);

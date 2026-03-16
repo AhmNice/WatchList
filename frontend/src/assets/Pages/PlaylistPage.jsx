@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import Header from "../components/Header";
+// import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { usePlaylistStore } from "../store/playlistStore";
 import PlaylistCard from "../components/Cards/PlaylistCard";
@@ -19,7 +19,7 @@ const PlaylistPage = () => {
     playlists,
     deletePlaylist,
     removeMovieFromPlaylist,
-    loadingPlaylist
+    loadingPlaylist,
   } = usePlaylistStore();
 
   const { user } = useAuthStore();
@@ -47,17 +47,17 @@ const PlaylistPage = () => {
 
   // Set document title
   useEffect(() => {
-    document.title = 'WatchList - Playlist';
+    document.title = "WatchList - Playlist";
   }, []);
 
   // Modal handlers
   const handleModalClose = useCallback(() => {
-    setModalOpen(prev => !prev);
+    setModalOpen((prev) => !prev);
   }, []);
 
   const handlePlaylistDetailsModal = useCallback(() => {
     if (playlistView) {
-      setPlaylistDetailsModal(prev => !prev);
+      setPlaylistDetailsModal((prev) => !prev);
     }
   }, [playlistView]);
 
@@ -70,37 +70,46 @@ const PlaylistPage = () => {
   }, []);
 
   // Playlist operations
-  const deleteThisPlaylist = useCallback(async (playlist) => {
-    if (!playlist?._id || !user?._id) return;
+  const deleteThisPlaylist = useCallback(
+    async (playlist) => {
+      if (!playlist?._id || !user?._id) return;
 
-    setDeletingPlaylist(true);
-    try {
-      await deletePlaylist(playlist._id, user._id);
-      toast.success('Playlist deleted successfully');
-      await fetchUserPlaylists(user._id);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to delete playlist');
-      console.error('Delete playlist error:', error);
-    } finally {
-      setDeletingPlaylist(false);
-      setPlaylistToDelete(null);
-    }
-  }, [deletePlaylist, fetchUserPlaylists, user]);
+      setDeletingPlaylist(true);
+      try {
+        await deletePlaylist(playlist._id, user._id);
+        toast.success("Playlist deleted successfully");
+        await fetchUserPlaylists(user._id);
+      } catch (error) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete playlist",
+        );
+        console.error("Delete playlist error:", error);
+      } finally {
+        setDeletingPlaylist(false);
+        setPlaylistToDelete(null);
+      }
+    },
+    [deletePlaylist, fetchUserPlaylists, user],
+  );
 
   const handleRemoveMovieFromPlaylist = useCallback(async () => {
     if (!playlistView?._id || !movieToRemove?.tmdbId || !user?._id) return;
 
     setDeleting(true);
     try {
-      await removeMovieFromPlaylist(playlistView._id, movieToRemove.tmdbId, user._id);
-      setPlaylistView(prev => ({
+      await removeMovieFromPlaylist(
+        playlistView._id,
+        movieToRemove.tmdbId,
+        user._id,
+      );
+      setPlaylistView((prev) => ({
         ...prev,
-        movies: prev.movies.filter(m => m.tmdbId !== movieToRemove.tmdbId),
+        movies: prev.movies.filter((m) => m.tmdbId !== movieToRemove.tmdbId),
       }));
-      toast.success('Movie removed from playlist');
+      toast.success("Movie removed from playlist");
     } catch (error) {
-      toast.error('Failed to remove movie from playlist');
-      console.error('Remove movie error:', error);
+      toast.error("Failed to remove movie from playlist");
+      console.error("Remove movie error:", error);
     } finally {
       setDeleting(false);
       setMovieToRemove(null);
@@ -201,10 +210,12 @@ const PlaylistPage = () => {
       <Sidebar />
 
       <div className="flex-1 min-h-full flex flex-col overflow-auto">
-        <Header />
+        {/* <Header /> */}
         <div className="overflow-y-auto p-6 scrollbar-none">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="Manrope-SemiBold text-2xl text-white">Your Playlists</h2>
+            <h2 className="Manrope-SemiBold text-2xl text-white">
+              Your Playlists
+            </h2>
             <Button
               text="Add Playlist"
               icon={<Plus size={20} className="text-white" />}

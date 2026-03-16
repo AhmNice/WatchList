@@ -1,6 +1,5 @@
 import axios from "axios";
 import { create } from "zustand";
-import { persist } from 'zustand/middleware';
 
 axios.defaults.withCredentials = true;
 
@@ -14,40 +13,32 @@ const initialStates = {
 const movieBaseURL = import.meta.env.VITE_MOVIE_BASE_URL;
 
 export const useMovieStore = create(
-  persist(
-    (set, get) => ({
-      ...initialStates,
+  (set, get) => ({
+    ...initialStates,
 
-      getAllMovie: async ( force = true) => {
-        const { movies } = get();
-        if (!force && movies && movies.length > 0) return;
-        set({ loading: true, success: false, errorMsg: null });
-        try {
-          const { data } = await axios.get(`${movieBaseURL}/all-movies`);
-          set({
-            loading: false,
-            success: true,
-            movies: data.movieList,
-          });
-        } catch (error) {
-          console.error(error.message);
-          set({
-            loading: false,
-            errorMsg:
-              error?.response?.data?.message ||
-              error.message ||
-              "Internal server error",
-          });
-        }
-      },
+    getAllMovie: async (force = true) => {
+      const { movies } = get();
+      if (!force && movies && movies.length > 0) return;
+      set({ loading: true, success: false, errorMsg: null });
+      try {
+        const { data } = await axios.get(`${movieBaseURL}/all-movies`);
+        set({
+          loading: false,
+          success: true,
+          movies: data.movieList,
+        });
+      } catch (error) {
+        console.error(error.message);
+        set({
+          loading: false,
+          errorMsg:
+            error?.response?.data?.message ||
+            error.message ||
+            "Internal server error",
+        });
+      }
+    },
 
-      resetMovieStore: () => set({ ...initialStates }),
-    }),
-    {
-      name: 'movie-store',
-      partialize: (state) => ({
-        movies: state.movies,
-      }),
-    }
-  )
+    resetMovieStore: () => set({ ...initialStates }),
+  })
 );

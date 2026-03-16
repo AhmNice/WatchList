@@ -1,35 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import { motion } from 'framer-motion';
-import { Edit, Lock, Mail, User, Calendar, Loader2 } from 'lucide-react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { useAuthStore } from '../store/authStore';
-import { useFavStore } from '../store/favoriteStore';
-import { usePlaylistStore } from '../store/playlistStore';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useEffect, useState } from "react";
+// import Header from '../components/Header';
+import Sidebar from "../components/Sidebar";
+import { motion } from "framer-motion";
+import { Edit, Lock, Mail, User, Calendar, Loader2 } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useAuthStore } from "../store/authStore";
+import { useFavStore } from "../store/favoriteStore";
+import { usePlaylistStore } from "../store/playlistStore";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { favorite } = useFavStore()
-  const { playlists } = usePlaylistStore()
+  const { favorite } = useFavStore();
+  const { playlists } = usePlaylistStore();
   const [loading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [stats, setStats] = useState({
     playlists: playlists?.length || 0,
-    favorites: favorite?.length ||0,
-    watched: 0
+    favorites: favorite?.length || 0,
+    watched: 0,
   });
 
   useEffect(() => {
     document.title = "Profile - WatchList";
     // fetchProfileData();
   }, []);
-  console.log(user.passwordLastChanged)
+  console.log(user.passwordLastChanged);
   // const fetchProfileData = async () => {
   //   try {
   //     setLoading(true);
@@ -50,7 +49,7 @@ const ProfilePage = () => {
 
   const handleProfileUpdate = (updatedData) => {
     // setUser({ ...user, ...updatedData });
-    toast.success('Profile updated successfully');
+    toast.success("Profile updated successfully");
   };
 
   return (
@@ -60,7 +59,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        {/* <Header /> */}
 
         {/* Scrollable Content */}
         <div className="flex-1 w-full text-white scrollbar-none overflow-y-auto p-6">
@@ -80,7 +79,11 @@ const ProfilePage = () => {
                 <div className="relative group">
                   <div className="w-32 h-32 rounded-full bg-[#262626] flex items-center justify-center overflow-hidden border-2 border-[#E50000]">
                     {user?.avatar ? (
-                      <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                      <img
+                        src={user.avatar}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <User size={48} className="text-gray-400" />
                     )}
@@ -97,14 +100,18 @@ const ProfilePage = () => {
                   <div className="flex justify-between items-start mb-2">
                     <h1 className="text-3xl font-bold">{user?.username}</h1>
                     <button
-                      onClick={() => { navigate('/settings')}}
+                      onClick={() => {
+                        navigate("/settings");
+                      }}
                       className="flex items-center gap-2 px-4 py-2 bg-[#262626] rounded-lg hover:bg-[#333] transition-colors"
                     >
                       <Edit size={16} />
                       <span>Edit Profile</span>
                     </button>
                   </div>
-                  <p className="text-gray-400 mb-4">{user?.bio || 'No bio yet'}</p>
+                  <p className="text-gray-400 mb-4">
+                    {user?.bio || "No bio yet"}
+                  </p>
 
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2 text-gray-400">
@@ -113,7 +120,9 @@ const ProfilePage = () => {
                     </div>
                     <div className="flex items-center gap-2 text-gray-400">
                       <Calendar size={16} />
-                      <span>Joined {new Date(user?.createdAt).toLocaleDateString()}</span>
+                      <span>
+                        Joined {new Date(user?.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -143,15 +152,15 @@ const ProfilePage = () => {
                     <span>Security</span>
                   </h2>
                   <button
-                    onClick={() =>{
-                      navigate('/settings')
-                    } }
+                    onClick={() => {
+                      navigate("/settings");
+                    }}
                     className="px-4 py-2 bg-[#E50000] rounded-lg hover:bg-[#FF1919] transition-colors"
                   >
                     Change Password
                   </button>
                 </div>
-                <p className="text-gray-400">{`Last changed: ${user.passwordLastChanged || 'Password has not been changed'}`}</p>
+                <p className="text-gray-400">{`Last changed: ${user.passwordLastChanged || "Password has not been changed"}`}</p>
               </div>
 
               {/* Recent Activity Section */}

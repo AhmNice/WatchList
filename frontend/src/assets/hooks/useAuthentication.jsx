@@ -7,7 +7,7 @@ const AuthWrapper = ({ children }) => {
   const { checkingAuth, authenticated, checkAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  // ✅ Only check once on mount
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -17,7 +17,7 @@ const AuthWrapper = ({ children }) => {
   if (!checkingAuth && authenticated && window.location.pathname === '/login') {
     navigate('/dashboard', { replace: true }); // or your dashboard route
   }
-  if (!checkingAuth && !authenticated && window.location.pathname !== '/login') {
+  if (!checkingAuth && !authenticated && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
     navigate('/login', { replace: true });
   }
 }, [checkingAuth, authenticated, navigate]);

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { useMovieStore } from "../store/movieStore";
-import PosterCard from "./posterCard";
+
 import { Loader2, Plus } from "lucide-react";
 import Button from "./button/Button";
 import { useNavigate } from "react-router-dom";
+import PosterCard from "./PosterCard";
 
 const Hero = () => {
   const { getAllMovie, movies, loading, success, errorMsg } = useMovieStore();

@@ -51,26 +51,19 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      await login({ email, password });
+      const response = await login({ email, password });
+      if (response.success) {
+        toast.success(response.data.message || "Logged in successfully");
+        navigate("/dashboard");
+      } else {
+        toast.error(response.error || "Login failed");
+      }
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (errorMsg) {
-      toast.error(errorMsg);
-    }
-  }, [errorMsg]);
-
-  useEffect(() => {
-    if (success && authenticated) {
-      toast.success("Welcome back, redirecting");
-      navigate("/dashboard");
-    }
-  }, [success, authenticated, navigate]);
 
   return (
     <motion.div
@@ -219,7 +212,10 @@ const Login = () => {
         className="Manrope-Regular p-3 bg-[#262626] mt-6 text-center text-sm text-[#A0A0A0]"
       >
         Don't have an account?{" "}
-        <a href="/signup" className="text-[#E50000] hover:underline font-medium">
+        <a
+          href="/signup"
+          className="text-[#E50000] hover:underline font-medium"
+        >
           Sign up
         </a>
       </motion.div>
@@ -227,4 +223,3 @@ const Login = () => {
   );
 };
 export default Login;
-

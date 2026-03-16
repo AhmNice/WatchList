@@ -8,27 +8,7 @@ const Header = ({ userImage = "/userAvatar.png" }) => {
   return (
     <header className="w-full h-16 bg-[#1A1A1A] border-b border-[#262626] px-6 flex items-center justify-between sticky top-0">
       {/* Search Bar */}
-      <div className="relative flex-1 max-w-xl mr-4">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="text-gray-400 h-5 w-5" />
-        </div>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="
-            block w-full pl-10 pr-4 py-2.5
-            bg-[#262626] text-white
-            rounded-lg border border-[#3D3D3D]
-            focus:outline-none focus:ring-2 focus:ring-[#E50000] focus:border-[#E50000]
-            placeholder-gray-400
-            transition-all duration-200
-            Manrope-Regular
-          "
-          placeholder="Search movies, shows..."
-          aria-label="Search"
-        />
-      </div>
+     <div></div>
 
       {/* Right Side Controls */}
       <div className="flex items-center space-x-4">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Settings as SettingsIcon,
   User,
@@ -11,83 +11,83 @@ import {
   ChevronRight,
   Mail,
   Shield,
-  Moon
-} from 'lucide-react';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import ProfileSettings from '../components/ProfileSettings';
-import EmailSettings from '../components/EmailSettings';
-import SecuritySettings from '../components/SecuritySettings';
-import ThemeSettings from '../components/ThemeSettings';
-import { useEffect } from 'react';
+  Moon,
+} from "lucide-react";
+// import Header from '../components/Header';
+import Sidebar from "../components/Sidebar";
+import ProfileSettings from "../components/ProfileSettings";
+import EmailSettings from "../components/EmailSettings";
+import SecuritySettings from "../components/SecuritySettings";
+import ThemeSettings from "../components/ThemeSettings";
+import { useEffect } from "react";
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('account');
+  const [activeTab, setActiveTab] = useState("account");
   const [expandedSections, setExpandedSections] = useState({
     account: true,
     privacy: false,
     notifications: false,
-    appearance: false
+    appearance: false,
   });
-  useEffect(()=>{
-    document.title = 'Settings - WatchList'
-  },[])
+  useEffect(() => {
+    document.title = "Settings - WatchList";
+  }, []);
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
   const settingsSections = [
     {
-      id: 'account',
+      id: "account",
       icon: <User size={18} />,
-      title: 'Account',
+      title: "Account",
       tabs: [
-        { id: 'profile', label: 'Profile' },
-        { id: 'email', label: 'Email' },
-        { id: 'security', label: 'Security' }
-      ]
+        { id: "profile", label: "Profile" },
+        { id: "email", label: "Email" },
+        { id: "security", label: "Security" },
+      ],
     },
     {
-      id: 'privacy',
+      id: "privacy",
       icon: <Lock size={18} />,
-      title: 'Privacy',
+      title: "Privacy",
       tabs: [
-        { id: 'data', label: 'Data & Permissions' },
-        { id: 'visibility', label: 'Profile Visibility' }
-      ]
+        { id: "data", label: "Data & Permissions" },
+        { id: "visibility", label: "Profile Visibility" },
+      ],
     },
     {
-      id: 'notifications',
+      id: "notifications",
       icon: <Bell size={18} />,
-      title: 'Notifications',
+      title: "Notifications",
       tabs: [
-        { id: 'email-notifications', label: 'Email' },
-        { id: 'push-notifications', label: 'Push' }
-      ]
+        { id: "email-notifications", label: "Email" },
+        { id: "push-notifications", label: "Push" },
+      ],
     },
     {
-      id: 'appearance',
+      id: "appearance",
       icon: <Palette size={18} />,
-      title: 'Appearance',
+      title: "Appearance",
       tabs: [
-        { id: 'theme', label: 'Theme' },
-        { id: 'language', label: 'Language' }
-      ]
-    }
+        { id: "theme", label: "Theme" },
+        { id: "language", label: "Language" },
+      ],
+    },
   ];
 
   const renderActiveTab = () => {
-    switch(activeTab) {
-      case 'profile':
+    switch (activeTab) {
+      case "profile":
         return <ProfileSettings />;
-      case 'email':
+      case "email":
         return <EmailSettings />;
-      case 'security':
+      case "security":
         return <SecuritySettings />;
-      case 'theme':
+      case "theme":
         return <ThemeSettings />;
       default:
         return <DefaultSettings />;
@@ -99,7 +99,7 @@ const Settings = () => {
       <Sidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        {/* <Header /> */}
 
         <main className="flex-1 overflow-auto p-6 text-white">
           <div className="max-w-6xl mx-auto flex gap-8">
@@ -122,10 +122,11 @@ const Settings = () => {
                           {section.icon}
                           <span>{section.title}</span>
                         </div>
-                        {expandedSections[section.id] ?
-                          <ChevronDown size={16} /> :
+                        {expandedSections[section.id] ? (
+                          <ChevronDown size={16} />
+                        ) : (
                           <ChevronRight size={16} />
-                        }
+                        )}
                       </button>
 
                       {expandedSections[section.id] && (
@@ -134,7 +135,7 @@ const Settings = () => {
                             <button
                               key={tab.id}
                               onClick={() => setActiveTab(tab.id)}
-                              className={`w-full text-left p-2 px-3 rounded-md text-sm ${activeTab === tab.id ? 'bg-[#E50000]/20 text-[#E50000]' : 'hover:bg-[#262626]'}`}
+                              className={`w-full text-left p-2 px-3 rounded-md text-sm ${activeTab === tab.id ? "bg-[#E50000]/20 text-[#E50000]" : "hover:bg-[#262626]"}`}
                             >
                               {tab.label}
                             </button>
@@ -167,18 +168,15 @@ const Settings = () => {
 
 // Settings Components
 
-
-
-
-
-
-
-
 const DefaultSettings = () => (
   <div className="flex flex-col items-center justify-center h-64">
     <SettingsIcon size={48} className="text-gray-500 mb-4" />
-    <h3 className="text-xl font-medium text-gray-400">Select a setting to configure</h3>
-    <p className="text-gray-500 mt-2">Choose from the sidebar to view and edit settings</p>
+    <h3 className="text-xl font-medium text-gray-400">
+      Select a setting to configure
+    </h3>
+    <p className="text-gray-500 mt-2">
+      Choose from the sidebar to view and edit settings
+    </p>
   </div>
 );
 
