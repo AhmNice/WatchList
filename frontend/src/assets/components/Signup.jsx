@@ -21,7 +21,7 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
-    phoneNumber: "", 
+    phoneNumber: "",
     password: "",
   });
   const [errors, setErrors] = useState({
@@ -86,9 +86,9 @@ const Signup = () => {
       const response = await signup(formData);
       if (response.success) {
         toast.success("Account created successfully! Redirecting to login...");
-        setTimeout(() => {
-          navigate("/otp");
-        }, 2000);
+        navigate("/otp", {
+          state: { email: formData.email, showModal: false, from: "signup" },
+        });
       } else {
         toast.error(errorMsg || "Failed to create account");
       }

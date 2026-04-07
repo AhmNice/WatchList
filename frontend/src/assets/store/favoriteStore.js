@@ -47,6 +47,10 @@ export const useFavStore = create(
           favSuccess: true,
           favorite: data.favorites
         })
+        if(!data.success){
+         return { success: false, error: data.message }
+        }
+        return { success: true }
       } catch (error) {
         console.log(error.message)
         set({

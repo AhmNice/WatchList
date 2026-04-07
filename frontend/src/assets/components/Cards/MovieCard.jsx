@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { Play, Clock, Calendar, Star, Heart, MoreVertical, Plus } from "lucide-react";
+import {
+  Play,
+  Clock,
+  Calendar,
+  Star,
+  Heart,
+  MoreVertical,
+  Plus,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 const MovieCard = ({
@@ -16,8 +24,8 @@ const MovieCard = ({
   onAddToPlaylist,
   onWatchLater,
   onOptionClick,
-  showOption=false,
-  onClick = () => { },
+  showOption = false,
+  onClick = () => {},
 }) => {
   // Format runtime from minutes to "Xhrs Ymins"
   const formatRuntime = (minutes) => {
@@ -27,15 +35,15 @@ const MovieCard = ({
     return `${hours > 0 ? `${hours}hrs ` : ""}${mins}mins`;
   };
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const optionRef = useRef(null)
+  const optionRef = useRef(null);
   const options = [
     {
-      type: 'Add to Playlist',
+      type: "Add to Playlist",
       icon: <Plus size={14} className="text-[#B3B3B3]" />,
       action: () => {
         setIsOptionsOpen(false);
         onAddToPlaylist?.();
-      }
+      },
     },
     // {
     //   type: 'Watch Later',
@@ -45,31 +53,33 @@ const MovieCard = ({
     //     onWatchLater?.();
     //   }
     // },
-  ]
+  ];
   const handleOptionClick = (e) => {
     e.stopPropagation();
     setIsOptionsOpen(!isOptionsOpen);
 
     onOptionClick?.();
-  }
-  useEffect(()=>{
-    const handleClickOutside =(event)=>{
-      if(optionRef.current && !optionRef.current.contains(event.target)){
+  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (optionRef.current && !optionRef.current.contains(event.target)) {
         setIsOptionsOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return()=>{
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-  })
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, type: "spring" }}
-      onClick={onClick}
+      onClick={() => {
+        onClick?.();
+      }}
       className="
         group relative
         bg-[#1A1A1A] rounded-lg
@@ -93,13 +103,15 @@ const MovieCard = ({
         />
 
         {/* Play Button Overlay */}
-        <div className="
+        <div
+          className="
           absolute inset-0
           bg-black/50
           flex items-center justify-center
           opacity-0 group-hover:opacity-100
           transition-opacity duration-300
-        ">
+        "
+        >
           {/* <div className="
             p-3 rounded-full
             bg-[#E50000] text-white
@@ -112,13 +124,15 @@ const MovieCard = ({
 
         {/* Rating Badge */}
         {showRating && (
-          <div className="
+          <div
+            className="
             absolute top-2 left-2
             bg-[#1A1A1A]/90
             px-2 py-1 rounded-full
             flex items-center
             text-yellow-400
-          ">
+          "
+          >
             <Star size={14} className="fill-current mr-1" />
             <span className="text-xs font-bold">
               {movie?.vote ? parseFloat(movie.vote).toFixed(1) : "N/A"}
@@ -142,10 +156,8 @@ const MovieCard = ({
                 hover:bg-[#262626]
                 ml-2
               "
-              type="button"
-                onClick={
-                  handleOptionClick
-                }
+                type="button"
+                onClick={handleOptionClick}
               >
                 <MoreVertical size={18} />
               </button>
@@ -158,16 +170,16 @@ const MovieCard = ({
                   transition={{ duration: 0.2 }}
                   className="absolute flex flex-col right-0 top-8 w-40 bg-[#262626] shadow-lg rounded-md overflow-hidden z-50 border border-[#404040]"
                 >
-
                   {options.map((option, index) => (
-                    <div key={`option-${index}`}
+                    <div
+                      key={`option-${index}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         option.action();
                       }}
                       className="w-full flex items-center justify-between p-2 hover:bg-[#404040] text-[#E0E0E0] Manrope-Medium text-sm cursor-pointer transition-colors duration-150"
                       role="button"
-                      onKeyDown={(e) => e.key === 'Enter' && option.action()}
+                      onKeyDown={(e) => e.key === "Enter" && option.action()}
                     >
                       <span>{option.type}</span>
                       <span className="text-gray-400">
@@ -175,14 +187,10 @@ const MovieCard = ({
                       </span>
                     </div>
                   ))}
-
                 </motion.div>
               )}
             </div>
-
           )}
-
-
         </div>
 
         <div className="flex justify-between mt-2 text-gray-400 text-xs">
@@ -228,11 +236,11 @@ MovieCard.defaultProps = {
   },
   showRating: false,
   showMenu: false,
-  showOption:false,
-  onAddToPlaylist: () => { },
-  onWatchLater: () => { },
-  onOptionClick: () => { },
-  onClick: () => { },
+  showOption: false,
+  onAddToPlaylist: () => {},
+  onWatchLater: () => {},
+  onOptionClick: () => {},
+  onClick: () => {},
 };
 
 export default MovieCard;
