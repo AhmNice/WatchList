@@ -10,6 +10,7 @@ import { addMovieToFavorite, getFavoriteMovies, removeFromFavorite } from '../co
 import { logInteraction } from '../middleware/logInteraction.js'
 import { recommendationSystem } from '../controller/recommendation.controller.js'
 import { followUser, getUsers, unFollowUser } from '../controller/getUsers.controller.js'
+import { getUserStats } from '../controller/stat.controller.js'
 
 //  authentications route
 export const authRoute = express.Router()
@@ -34,10 +35,10 @@ playlistRoute.post('/create-playlist', verifySession, createPlaylist)
 playlistRoute.post('/create-shared-playlist', verifySession, createSharedPlaylist)
 playlistRoute.post('/create-empty-playlist', verifySession, createEmptyPlaylist)
 playlistRoute.get('/get-playlist/:playlistId', getPlaylistById)
-playlistRoute.get('/get-userPlaylist/:userId',getUserPlaylists)
-playlistRoute.patch('/update-playlist/:playlistId/:userId', verifySession, verifyOwnership,logInteraction('playlist'), updatePlaylist)
+playlistRoute.get('/get-userPlaylist/:userId', getUserPlaylists)
+playlistRoute.patch('/update-playlist/:playlistId/:userId', verifySession, verifyOwnership, logInteraction('playlist'), updatePlaylist)
 playlistRoute.delete('/delete-playlist/:playlistId/:userId', verifySession, verifyOwnership, deletePlaylist)
-playlistRoute.delete('/remove-movie/:playlistId/:userId/:movieId', verifySession,verifyOwnership, removeMovieFromPlaylist)
+playlistRoute.delete('/remove-movie/:playlistId/:userId/:movieId', verifySession, verifyOwnership, removeMovieFromPlaylist)
 playlistRoute.post('/add-user/:playlistShareCode', verifySession, addUserToSharedPlaylist)
 
 // movie route
@@ -45,22 +46,25 @@ export const movieRoute = express.Router()
 movieRoute.get('/trending', trendingMovie)
 movieRoute.get('/all-movies', getAllMovies)
 movieRoute.get('/search', searchMovie)
-movieRoute.get('/multi-search',multi_search)
-movieRoute.post('/add-review/:movieId',verifySession,  addReview)
-movieRoute.get('/review/:movieId',verifySession,  getMovieReviews)
+movieRoute.get('/multi-search', multi_search)
+movieRoute.post('/add-review/:movieId', verifySession, addReview)
+movieRoute.get('/review/:movieId', verifySession, getMovieReviews)
 movieRoute.get('/:movieId', getMovieById)
 
 // favorite route
 export const favoriteRoute = express.Router()
-favoriteRoute.get('/get-favorite/:userId',verifySession, getFavoriteMovies)
+favoriteRoute.get('/get-favorite/:userId', verifySession, getFavoriteMovies)
 favoriteRoute.post('/addMovieToFavorite/:userId', logInteraction('favorite'), verifySession, addMovieToFavorite)
-favoriteRoute.delete('/remove-movie/:movieId/:userId',verifySession,removeFromFavorite)
+favoriteRoute.delete('/remove-movie/:movieId/:userId', verifySession, removeFromFavorite)
 
 export const recommendationRoute = express.Router()
-recommendationRoute.post('/recommend/:userId',verifySession, recommendationSystem)
+recommendationRoute.post('/recommend/:userId', verifySession, recommendationSystem)
 
 
 export const userRoute = express.Router();
 userRoute.get('/users', getUsers)
-userRoute.post('/follow/:userId/:targetUserId',verifySession, followUser)
-userRoute.post('/unfollow/:userId/:targetUserId',verifySession, unFollowUser)
+userRoute.post('/follow/:userId/:targetUserId', verifySession, followUser)
+userRoute.post('/unfollow/:userId/:targetUserId', verifySession, unFollowUser)
+
+export const statRoute = express.Router()
+statRoute.get('/user/:userId', verifySession, getUserStats)

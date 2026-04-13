@@ -3,13 +3,13 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import { connectDB } from './db/database.js'
 import cors from 'cors'
-import { authRoute, favoriteRoute, movieRoute, playlistRoute, recommendationRoute, userRoute } from './routes/routes.js'
+import { authRoute, favoriteRoute, movieRoute, playlistRoute, recommendationRoute, statRoute, userRoute } from './routes/routes.js'
 
 dotenv.config()
 const app = express()
 app.use(cors({
-  origin:process.env.CLIENT_URL,
-  credentials:true
+  origin: process.env.CLIENT_URL,
+  credentials: true
 }))
 app.use(express.json());
 app.use(cookieParser());
@@ -20,15 +20,16 @@ app.use('/movie', movieRoute)
 app.use('/favorite', favoriteRoute)
 app.use('/recommendation', recommendationRoute)
 app.use('/user-api', userRoute)
-const startServer = async()=>{
-    console.log('Connecting....')
-   try {
+app.use('/stat', statRoute)
+const startServer = async () => {
+  console.log('Connecting....')
+  try {
     await connectDB()
-    app.listen(process.env.PORT,()=>{
+    app.listen(process.env.PORT, () => {
       console.log('Server is up and running 🚀')
     })
-   } catch (error) {
+  } catch (error) {
     console.log(error.message)
-   }
+  }
 }
 startServer();

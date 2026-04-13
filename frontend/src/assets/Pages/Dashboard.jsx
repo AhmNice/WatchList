@@ -11,50 +11,51 @@ import { useMovieStore } from "../store/movieStore";
 import { usePlaylistStore } from "../store/playlistStore";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
-import { useFavStore } from "../store/favoriteStore";
+import { useStatStore } from "../store/statStore";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { playlists, fetchUserPlaylists, loadingPlaylist } = usePlaylistStore();
-  const { favorite } = useFavStore();
+  const { stats: userStats, fetchUserStats, loadingStats } = useStatStore();
+  const { user } = useAuthStore();
 
-  const stats = [
+  const statCards = [
     {
-      title: "Movies Watched",
-      value: 128,
+      title: "Movies In Playlists",
+      value: userStats?.totalMoviesInPlaylists || 0,
       icon: <Film className="text-[#FF4C4C]" size={28} />,
     },
     {
       title: "Favorites",
-      value: favorite?.length || 0,
+      value: userStats?.totalFavoriteMovies || 0,
       icon: <Heart className="text-[#E50000]" size={28} />,
     },
     {
       title: "Playlists",
-      value: playlists?.length || 0,
+      value: userStats?.totalPlaylists || 0,
       icon: <ListVideo className="text-[#00C49F]" size={28} />,
     },
     {
       title: "Watch Time",
-      value: "36h",
+      value: `${userStats?.totalWatchTimeHours || 0}h`,
       icon: <Clock className="text-[#FFB400]" size={28} />,
     },
   ];
-  const { user } = useAuthStore();
-  const { getAllMovie, movies, loading, success, errorMsg } = useMovieStore();
+  const { getAllMovie, movies, loading } = useMovieStore();
+
   useEffect(() => {
     document.title = "Dashboard - WatchList";
-    if (movies && movies.length > 0) {
-      return;
-    } else {
+    if (!movies || movies.length === 0) {
       getAllMovie();
     }
-    if (playlists && playlists.length > 0) {
-      return;
-    } else {
-      fetchUserPlaylists();
+
+    if (user?._id) {
+      if (!playlists || playlists.length === 0) {
+        fetchUserPlaylists(user._id);
+      }
+      fetchUserStats(user._id);
     }
-  }, []);
+  }, [user?._id]);
   console.log(movies);
 
   return (
@@ -74,12 +75,12 @@ const Dashboard = () => {
 
           {/* Stats Grid - responsive columns */}
           <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-4">
-            {stats.map((stat, index) => (
+            {statCards.map((stat, index) => (
               <Card
                 key={index}
                 cardTitle={stat.title}
                 icon={stat.icon}
-                cardText={stat.value}
+                cardText={loadingStats ? "..." : stat.value}
               />
             ))}
           </div>
